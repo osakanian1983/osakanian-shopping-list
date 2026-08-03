@@ -1,0 +1,147 @@
+:root {
+  --bg: #f5f6f4;
+  --surface: #ffffff;
+  --text: #1c1e1c;
+  --muted: #6b6f6b;
+  --accent: #1f6f54;
+  --accent-contrast: #ffffff;
+  --border: #e2e4e0;
+  --danger: #b3432b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14161a;
+    --surface: #1e2126;
+    --text: #f0f1ee;
+    --muted: #9aa0a6;
+    --accent: #4fb587;
+    --accent-contrast: #0b1210;
+    --border: #2c3036;
+    --danger: #e0705a;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, "Segoe UI", "Hiragino Sans", "Yu Gothic", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 3rem;
+  min-height: 100dvh;
+}
+
+.app-header h1 {
+  font-size: 1.4rem;
+  margin: 0.5rem 0 1.25rem;
+}
+
+.add-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.add-form input {
+  flex: 1;
+  padding: 0.7rem 0.8rem;
+  font-size: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.add-form button {
+  padding: 0.7rem 1.1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  cursor: pointer;
+}
+
+.add-form button:active { opacity: 0.85; }
+
+.item-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.7rem 0.8rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.item-row input[type="checkbox"] {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+}
+
+.item-row .item-label {
+  flex: 1;
+  word-break: break-word;
+}
+
+.item-row.bought .item-label {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.item-row .delete-btn {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  line-height: 1;
+}
+
+.item-row .delete-btn:hover { color: var(--danger); }
+
+.bought-block {
+  margin-top: 1.25rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+}
+
+.bought-toggle {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 0.4rem 0;
+  cursor: pointer;
+}
+
+.bought-list { margin-top: 0.5rem; }
+.bought-list.collapsed { display: none; }
+
+.empty-message {
+  text-align: center;
+  color: var(--muted);
+  margin-top: 2.5rem;
+  font-size: 0.95rem;
+}
