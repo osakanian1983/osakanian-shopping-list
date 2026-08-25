@@ -15,7 +15,7 @@ from compose import compose_mandala
 BOOK_TITLE = "Flower Mandalas"
 BOOK_SUBTITLE = "An Adult Coloring Book for Stress Relief & Relaxation"
 BOOK_SUBTITLE2 = "25 Intricate Floral Mandala Designs"
-AUTHOR_NAME = "[Author Name]"
+AUTHOR_NAME = "Osakanian"
 YEAR = "2026"
 
 W, H = letter  # 612 x 792 pt

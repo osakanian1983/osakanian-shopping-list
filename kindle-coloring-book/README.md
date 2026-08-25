@@ -14,14 +14,21 @@ Python (`reportlab`) で幾何学的に自動生成したオリジナル作品�
 | `build/previews/*.png` | 表紙・タイトルページ・塗り絵ページのプレビュー画像（PDFを開かずに確認可能） |
 | `scripts/` | 生成に使ったPythonスクリプト一式（再生成・デザイン数の変更などに利用可） |
 
+## まずはこれをどうぞ
+
+`KDP_COPY_PASTE_SHEET.md` に、KDPの入力フォームへそのまま貼り付けられる
+書名・紹介文・キーワード・カテゴリ・価格などをまとめてあります。
+これをコピペしながら進めれば、実質「あとはアップロードとボタンを押すだけ」
+の状態になります。
+
 ## 出版（アップロード）までに、あなたが決めて直す必要があること
 
 これらは私が代わりに決められない項目です。KDPにアップロードする前に必ず確認してください。
 
 1. **著者名 / ペンネーム**
-   現在は `[Author Name]` のプレースホルダーのままです。
-   `scripts/build_book.py` と `scripts/build_cover.py` の先頭にある
-   `AUTHOR_NAME = "[Author Name]"` を実名かペンネームに書き換えて、
+   現在は `Osakanian` を著者名として本文・表紙に反映済みです。
+   変更したい場合は `scripts/build_book.py` と `scripts/build_cover.py` の
+   先頭にある `AUTHOR_NAME` / `AUTHOR` を書き換えて、
    `python3 scripts/build_book.py && python3 scripts/build_cover.py` を再実行してください。
 
 2. **書名（タイトル / サブタイトル）**

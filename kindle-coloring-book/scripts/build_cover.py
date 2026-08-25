@@ -39,7 +39,7 @@ OUT_PATH = "/home/user/osakanian-shopping-list/kindle-coloring-book/build/flower
 TITLE = "Flower Mandalas"
 SUBTITLE = "An Adult Coloring Book for Stress Relief & Relaxation"
 SUBTITLE2 = "25 Intricate Floral Mandala Designs"
-AUTHOR = "[Author Name]"
+AUTHOR = "Osakanian"
 
 BACK_BLURB = [
     "Escape into a world of intricate floral mandalas designed to help",
