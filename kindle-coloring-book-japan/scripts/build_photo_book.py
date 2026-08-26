@@ -42,6 +42,8 @@ LOCATIONS = [
     ("Chuson-ji Temple", "Hiraizumi, Iwate Prefecture", "03_iwate_chusonji.png"),
     ("Matsushima Bay", "Miyagi Prefecture", "04_miyagi_matsushima.png"),
     ("Kakunodate", "Samurai District, Akita Prefecture", "05_akita_kakunodate.png"),
+    ("Yamadera", "Risshaku-ji Temple, Yamagata Prefecture", "06_yamagata_yamadera.png"),
+    ("Tsuruga Castle", "Aizuwakamatsu, Fukushima Prefecture", "07_fukushima_tsurugajo.png"),
 ]
 
 
