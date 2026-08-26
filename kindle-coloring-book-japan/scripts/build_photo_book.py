@@ -48,6 +48,9 @@ LOCATIONS = [
     ("Nikko Toshogu", "Tochigi Prefecture", "09_tochigi_nikko_toshogu.png"),
     ("Kusatsu Onsen", "Yubatake, Gunma Prefecture", "10_gunma_kusatsu.png"),
     ("Kawagoe", "Old Town, Saitama Prefecture", "11_saitama_kawagoe.png"),
+    ("Sensoji Kaminarimon", "Asakusa, Tokyo", "12_tokyo_sensoji.png"),
+    ("Nihonji Great Buddha", "Mount Nokogiri, Chiba Prefecture", "13_chiba_nihonji_daibutsu.png"),
+    ("Great Buddha of Kamakura", "Kanagawa Prefecture", "14_kanagawa_kamakura_daibutsu.png"),
 ]
 
 
