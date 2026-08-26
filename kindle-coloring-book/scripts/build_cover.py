@@ -16,6 +16,10 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.colors import HexColor, white, black
 
 from compose_cover import compose_cover_mandala
+import pdf_fonts
+from pdf_fonts import FONT_REGULAR, FONT_BOLD, FONT_ITALIC
+
+pdf_fonts.register()
 
 TRIM_W_IN = 8.5
 TRIM_H_IN = 11.0
@@ -71,10 +75,10 @@ def draw_back_cover(c, x0):
     top_text_y = COVER_H - BLEED - 1.1 * IN
 
     c.setFillColor(black)
-    c.setFont("Helvetica-Bold", 20)
+    c.setFont(FONT_BOLD, 20)
     c.drawCentredString(cx, top_text_y, TITLE)
 
-    c.setFont("Helvetica", 10.5)
+    c.setFont(FONT_REGULAR, 10.5)
     y = top_text_y - 34
     for line in BACK_BLURB:
         c.drawCentredString(cx, y, line)
@@ -94,7 +98,7 @@ def draw_back_cover(c, x0):
     c.rect(bx, by, barcode_w, barcode_h, fill=0, stroke=1)
     c.setDash()
     c.setFillColor(HexColor("#999999"))
-    c.setFont("Helvetica", 7)
+    c.setFont(FONT_REGULAR, 7)
     c.drawCentredString(bx + barcode_w / 2, by + barcode_h / 2,
                          "KDP barcode area (leave clear)")
 
@@ -106,7 +110,7 @@ def draw_spine(c, x0):
     if SPINE_IN >= 0.25:
         c.saveState()
         c.setFillColor(white)
-        c.setFont("Helvetica-Bold", 14)
+        c.setFont(FONT_BOLD, 14)
         c.translate(x0 + SPINE_W / 2, COVER_H / 2)
         c.rotate(90)
         c.drawCentredString(0, -5, TITLE)
@@ -120,7 +124,7 @@ def draw_front_cover(c, x0):
     cx = x0 + BLEED + TRIM_W / 2
 
     c.setFillColor(black)
-    c.setFont("Helvetica-Bold", 40)
+    c.setFont(FONT_BOLD, 40)
     title_y = COVER_H - BLEED - 1.05 * IN
     c.drawCentredString(cx, title_y, TITLE)
 
@@ -128,19 +132,19 @@ def draw_front_cover(c, x0):
     c.setStrokeColor(black)
     c.line(cx - 130, title_y - 20, cx + 130, title_y - 20)
 
-    c.setFont("Helvetica", 15)
+    c.setFont(FONT_REGULAR, 15)
     c.drawCentredString(cx, title_y - 42, SUBTITLE)
-    c.setFont("Helvetica", 12.5)
+    c.setFont(FONT_REGULAR, 12.5)
     c.drawCentredString(cx, title_y - 62, SUBTITLE2)
 
     compose_cover_mandala(c, cx, BLEED + 4.6 * IN, 2.9 * IN, seed=9001)
 
-    c.setFont("Helvetica-Oblique", 13)
+    c.setFont(FONT_ITALIC, 13)
     c.drawCentredString(cx, BLEED + 0.55 * IN, AUTHOR)
 
 
 def build():
-    c = canvas.Canvas(OUT_PATH, pagesize=(COVER_W, COVER_H))
+    c = canvas.Canvas(OUT_PATH, pagesize=(COVER_W, COVER_H), initialFontName=FONT_REGULAR)
 
     draw_back_cover(c, 0)
     draw_spine(c, TRIM_W + BLEED)

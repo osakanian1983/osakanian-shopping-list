@@ -11,6 +11,10 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.colors import Color
 
 from compose import compose_mandala
+import pdf_fonts
+from pdf_fonts import FONT_REGULAR, FONT_BOLD, FONT_ITALIC
+
+pdf_fonts.register()
 
 BOOK_TITLE = "Flower Mandalas"
 BOOK_SUBTITLE = "An Adult Coloring Book for Stress Relief & Relaxation"
@@ -46,7 +50,7 @@ def design_center_and_radius(page_no):
 def draw_folio(c, page_no):
     c.saveState()
     c.setFillColor(LIGHT_GRAY)
-    c.setFont("Helvetica", 9)
+    c.setFont(FONT_REGULAR, 9)
     c.drawCentredString(W / 2, 0.35 * 72, str(page_no))
     c.restoreState()
 
@@ -54,15 +58,15 @@ def draw_folio(c, page_no):
 def draw_title_page(c):
     c.saveState()
     c.setFillColor(Color(0, 0, 0))
-    c.setFont("Helvetica-Bold", 34)
+    c.setFont(FONT_BOLD, 34)
     c.drawCentredString(W / 2, H * 0.74, BOOK_TITLE)
 
     c.setLineWidth(1)
     c.line(W / 2 - 90, H * 0.715, W / 2 + 90, H * 0.715)
 
-    c.setFont("Helvetica", 15)
+    c.setFont(FONT_REGULAR, 15)
     c.drawCentredString(W / 2, H * 0.685, BOOK_SUBTITLE)
-    c.setFont("Helvetica", 12)
+    c.setFont(FONT_REGULAR, 12)
     c.drawCentredString(W / 2, H * 0.66, BOOK_SUBTITLE2)
     c.restoreState()
 
@@ -70,23 +74,23 @@ def draw_title_page(c):
     compose_mandala(c, W / 2, H * 0.36, 140, seed=9001)
 
     c.saveState()
-    c.setFont("Helvetica-Oblique", 12)
+    c.setFont(FONT_ITALIC, 12)
     c.drawCentredString(W / 2, H * 0.12, "by " + AUTHOR_NAME)
     c.restoreState()
 
 
 def draw_copyright_page(c):
     c.saveState()
-    left = BASE_MARGIN + GUTTER_EXTRA if True else BASE_MARGIN
+    left = BASE_MARGIN  # 奥付は偶数(左)ページなのでノドは右側
     y = H * 0.78
-    c.setFont("Helvetica-Bold", 12)
+    c.setFont(FONT_BOLD, 12)
     c.drawString(left, y, BOOK_TITLE)
     y -= 16
-    c.setFont("Helvetica", 10)
+    c.setFont(FONT_REGULAR, 10)
     c.drawString(left, y, BOOK_SUBTITLE)
     y -= 40
 
-    c.setFont("Helvetica", 10)
+    c.setFont(FONT_REGULAR, 10)
     lines = [
         "Copyright © %s %s" % (YEAR, AUTHOR_NAME),
         "All rights reserved.",
@@ -112,9 +116,9 @@ def draw_copyright_page(c):
 
 def draw_thankyou_page(c):
     c.saveState()
-    c.setFont("Helvetica-Bold", 24)
+    c.setFont(FONT_BOLD, 24)
     c.drawCentredString(W / 2, H * 0.62, "Thank You!")
-    c.setFont("Helvetica", 12)
+    c.setFont(FONT_REGULAR, 12)
     text_lines = [
         "We hope you enjoyed coloring these mandalas as much",
         "as we enjoyed creating them for you.",
@@ -134,7 +138,7 @@ def draw_thankyou_page(c):
 
 
 def build():
-    c = canvas.Canvas(OUT_PATH, pagesize=letter)
+    c = canvas.Canvas(OUT_PATH, pagesize=letter, initialFontName=FONT_REGULAR)
 
     page_no = 1
     draw_title_page(c)
@@ -157,10 +161,10 @@ def build():
         compose_mandala(c, cx, cy, max_r, seed=design_num)
         c.saveState()
         c.setFillColor(LIGHT_GRAY)
-        c.setFont("Helvetica", 8)
-        c.drawCentredString(W / 2, 0.45 * 72, "Design %02d" % design_num)
-        c.setFont("Helvetica", 9)
-        c.drawCentredString(W / 2, 0.22 * 72, str(page_no))
+        c.setFont(FONT_REGULAR, 8)
+        c.drawCentredString(W / 2, 0.5 * 72, "Design %02d" % design_num)
+        c.setFont(FONT_REGULAR, 9)
+        c.drawCentredString(W / 2, 0.35 * 72, str(page_no))
         c.restoreState()
         c.showPage()
         page_no += 1
