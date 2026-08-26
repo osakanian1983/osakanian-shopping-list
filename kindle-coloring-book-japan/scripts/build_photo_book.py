@@ -37,7 +37,11 @@ LIGHT_GRAY = Color(0.5, 0.5, 0.5)
 # (英語タイトル, 副題(場所・都道府県), 画像ファイル名)
 # 画像がまだ無いものは source_images/ に追加してからリストに加える。
 LOCATIONS = [
-    ("Mount Fuji", "Lake Kawaguchi, Yamanashi Prefecture", "mount_fuji_yamanashi.png"),
+    ("Kushiro Marsh", "Red-Crowned Cranes, Hokkaido", "01_hokkaido_kushiro.png"),
+    ("Nebuta Festival", "Aomori Prefecture", "02_aomori_nebuta.png"),
+    ("Chuson-ji Temple", "Hiraizumi, Iwate Prefecture", "03_iwate_chusonji.png"),
+    ("Matsushima Bay", "Miyagi Prefecture", "04_miyagi_matsushima.png"),
+    ("Kakunodate", "Samurai District, Akita Prefecture", "05_akita_kakunodate.png"),
 ]
 
 
