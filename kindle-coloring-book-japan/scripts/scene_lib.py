@@ -117,32 +117,113 @@ def mount_fuji(c, cx, base_y, width, height, snow=True, width_line=LINE_MAIN):
     c.restoreState()
 
 
-def pine_tree(c, x, base_y, height, spread=1.0, width_line=LINE_DETAIL, seed=0):
-    """松の木(幹+雲形の葉のかたまりを数段)"""
+def _bark_texture(c, x0, y0, x1, y1, width_line=LINE_FAR, seed=0, count=None):
+    """幹に沿った樹皮の質感線(短い縦の弧を数本)"""
     rnd = random.Random(seed)
-    spread = spread * rnd.uniform(0.9, 1.1)
+    length = math.hypot(x1 - x0, y1 - y0)
+    if count is None:
+        count = max(2, int(length / 14))
+    dx, dy = (x1 - x0) / max(length, 1e-6), (y1 - y0) / max(length, 1e-6)
+    perp_x, perp_y = -dy, dx
     c.saveState()
     c.setLineWidth(width_line)
-    trunk_top = base_y + height * 0.35
-    c.line(x, base_y, x, trunk_top)
-    c.line(x, base_y + height * 0.18, x - height * 0.18 * spread, base_y + height * 0.30)
-    c.line(x, base_y + height * 0.28, x + height * 0.16 * spread, base_y + height * 0.38)
-
-    layers = [
-        (base_y + height * 0.30, height * 0.30 * spread, height * 0.16),
-        (base_y + height * 0.50, height * 0.40 * spread, height * 0.20),
-        (base_y + height * 0.72, height * 0.34 * spread, height * 0.20),
-        (base_y + height * 0.92, height * 0.22 * spread, height * 0.16),
-    ]
-    for cy, w, h in layers:
+    for i in range(count):
+        t = (i + 0.5) / count + rnd.uniform(-0.06, 0.06)
+        bx, by = x0 + dx * length * t, y0 + dy * length * t
+        off = rnd.uniform(-1, 1) * length * 0.10
+        seg = length * rnd.uniform(0.08, 0.16)
+        sx, sy = bx + perp_x * off, by + perp_y * off
+        ex, ey = sx + dx * seg, sy + dy * seg
         p = c.beginPath()
-        p.moveTo(x - w, cy)
-        p.curveTo(x - w * 0.6, cy + h * 0.7, x - w * 0.2, cy + h, x, cy + h * 0.85)
-        p.curveTo(x + w * 0.25, cy + h * 1.05, x + w * 0.65, cy + h * 0.6, x + w, cy)
-        p.curveTo(x + w * 0.7, cy - h * 0.35, x + w * 0.3, cy - h * 0.3, x, cy - h * 0.1)
-        p.curveTo(x - w * 0.35, cy - h * 0.3, x - w * 0.7, cy - h * 0.3, x - w, cy)
+        p.moveTo(sx, sy)
+        p.curveTo(sx + perp_x * 1.2, sy + perp_y * 1.2,
+                  ex + perp_x * 1.2, ey + perp_y * 1.2, ex, ey)
         c.drawPath(p, stroke=1, fill=0)
     c.restoreState()
+
+
+def _foliage_mass(c, cx, cy, r, n_clusters=5, cluster_r_range=(0.4, 0.6),
+                   y_squash=0.82, width_line=LINE_DETAIL, seed=0, texture=True,
+                   spread_frac=0.55):
+    """1本の外輪郭(やや不規則なもこもこ形)+ 内側の控えめな陰影弧線で
+    葉のかたまりの立体感を出す(輪郭を何重にも重ねると線が絡んで
+    汚く見えるため、外形は1本に抑える)。"""
+    rnd = random.Random(seed)
+    lobes = max(9, n_clusters + 6)
+    bulge_range = (0.72, 1.08)
+    outline = _puffy_blob(c, cx, cy, r, lobes=lobes, bulge_range=bulge_range,
+                           y_squash=y_squash, width_line=width_line, seed=seed)
+
+    # 内側の陰影弧(閉じない短い弧を数本、クラスター感を控えめに演出)
+    c.saveState()
+    c.setLineWidth(width_line * 0.85)
+    n_creases = max(2, n_clusters - 2)
+    for i in range(n_creases):
+        a = rnd.uniform(0, 2 * math.pi)
+        d = r * rnd.uniform(0.15, 0.55)
+        sx = cx + d * math.sin(a)
+        sy = cy + d * math.cos(a) * y_squash
+        arc_r = r * rnd.uniform(0.22, 0.34)
+        a0 = rnd.uniform(0, 2 * math.pi)
+        sweep = rnd.uniform(1.3, 2.3)
+        pts = []
+        for k in range(9):
+            aa = a0 + sweep * k / 8
+            pts.append((sx + arc_r * math.sin(aa), sy + arc_r * math.cos(aa) * y_squash))
+        p = c.beginPath()
+        p.moveTo(*pts[0])
+        for px, py in pts[1:]:
+            p.lineTo(px, py)
+        c.drawPath(p, stroke=1, fill=0)
+    c.restoreState()
+
+    if texture:
+        c.saveState()
+        c.setLineWidth(LINE_FAR)
+        for _ in range(max(5, int(r * 0.12))):
+            a = rnd.uniform(0, 2 * math.pi)
+            d = r * rnd.uniform(0, 0.85)
+            tx, ty = cx + d * math.sin(a), cy + d * math.cos(a) * y_squash
+            tlen = r * rnd.uniform(0.05, 0.10)
+            tang = rnd.uniform(0, 2 * math.pi)
+            ex, ey = tx + tlen * math.sin(tang), ty + tlen * math.cos(tang)
+            p = c.beginPath()
+            p.moveTo(tx, ty)
+            p.curveTo(tx + (ex - tx) * 0.3, ty + (ey - ty) * 0.3, ex, ey, ex, ey)
+            c.drawPath(p, stroke=1, fill=0)
+        c.restoreState()
+    return outline
+
+
+def pine_tree(c, x, base_y, height, spread=1.0, width_line=LINE_DETAIL, seed=0):
+    """松の木(節のある幹+雲形の葉のかたまりを数段、各段は複数クラスターで密に)"""
+    rnd = random.Random(seed)
+    spread = spread * rnd.uniform(0.9, 1.1)
+    trunk_top = base_y + height * 0.35
+    lean = height * 0.02 * rnd.uniform(-1, 1)
+
+    c.saveState()
+    c.setLineWidth(width_line)
+    p = c.beginPath()
+    p.moveTo(x, base_y)
+    p.curveTo(x + lean * 0.3, base_y + height * 0.15, x - lean * 0.4,
+              base_y + height * 0.25, x + lean, trunk_top)
+    c.drawPath(p, stroke=1, fill=0)
+    c.line(x, base_y + height * 0.18, x - height * 0.18 * spread, base_y + height * 0.30)
+    c.line(x, base_y + height * 0.28, x + height * 0.16 * spread, base_y + height * 0.38)
+    c.restoreState()
+    _bark_texture(c, x, base_y, x + lean, trunk_top, seed=seed, count=4)
+
+    layers = [
+        (base_y + height * 0.28, height * 0.30 * spread, 3),
+        (base_y + height * 0.48, height * 0.40 * spread, 4),
+        (base_y + height * 0.70, height * 0.35 * spread, 4),
+        (base_y + height * 0.90, height * 0.24 * spread, 3),
+    ]
+    for i, (cy, w, n) in enumerate(layers):
+        _foliage_mass(c, x, cy, w, n_clusters=n, cluster_r_range=(0.5, 0.72),
+                       y_squash=0.62, width_line=width_line, seed=seed + i * 11 + 1,
+                       spread_frac=0.62)
 
 
 def bamboo_cluster(c, x, base_y, height, count=5, spread=50, width_line=LINE_DETAIL, seed=0):
@@ -239,49 +320,70 @@ def _mini_blossom(c, x, y, r, petals=5, width_line=LINE_DETAIL):
     c.restoreState()
 
 
-def cherry_blossom_tree(c, x, base_y, height, spread=1.0, blossoms=10, seed=0,
-                         width_line=LINE_DETAIL):
-    rnd = random.Random(seed)
+def _tree_trunk_and_branches(c, x, base_y, trunk_top, n_branches, branch_len_range,
+                              spread, width_line, seed, taper=True):
+    """先細りの二重輪郭の幹+自然な曲がりの枝を描き、枝先の座標を返す"""
+    rnd = random.Random(seed + 500)
     c.saveState()
     c.setLineWidth(width_line)
-    trunk_top = base_y + height * 0.32
-    p = c.beginPath()
-    p.moveTo(x - 4, base_y)
-    p.curveTo(x - 3, base_y + height * 0.15, x + 2, base_y + height * 0.2, x, trunk_top)
-    c.drawPath(p, stroke=1, fill=0)
-    p2 = c.beginPath()
-    p2.moveTo(x + 4, base_y)
-    p2.curveTo(x + 3, base_y + height * 0.15, x + 1, base_y + height * 0.2, x, trunk_top)
-    c.drawPath(p2, stroke=1, fill=0)
+    base_w = (trunk_top - base_y) * 0.05
+    kink_x = x + rnd.uniform(-1, 1) * base_w * 1.5
+    kink_y = base_y + (trunk_top - base_y) * rnd.uniform(0.4, 0.6)
+    pL = c.beginPath()
+    pL.moveTo(x - base_w, base_y)
+    pL.curveTo(kink_x - base_w * 0.6, base_y + (kink_y - base_y) * 0.5,
+               kink_x - base_w * 0.3, kink_y, x - base_w * 0.15, trunk_top)
+    c.drawPath(pL, stroke=1, fill=0)
+    pR = c.beginPath()
+    pR.moveTo(x + base_w, base_y)
+    pR.curveTo(kink_x + base_w * 0.6, base_y + (kink_y - base_y) * 0.5,
+               kink_x + base_w * 0.3, kink_y, x + base_w * 0.15, trunk_top)
+    c.drawPath(pR, stroke=1, fill=0)
+    c.restoreState()
+    _bark_texture(c, x, base_y, x, trunk_top, seed=seed, count=5)
 
     branch_ends = []
-    for i in range(4):
-        a = rnd.uniform(-1.1, 1.1)
-        length = height * rnd.uniform(0.25, 0.4)
+    c.saveState()
+    c.setLineWidth(width_line * 0.85)
+    for i in range(n_branches):
+        a = rnd.uniform(-1.2, 1.2)
+        length = rnd.uniform(*branch_len_range)
         ex = x + math.sin(a) * length * spread
-        ey = trunk_top + abs(math.cos(a)) * length * 0.6
+        ey = trunk_top + abs(math.cos(a)) * length * 0.55
+        midx = x + math.sin(a) * length * 0.5 * spread
+        midy = trunk_top + abs(math.cos(a)) * length * 0.3
+        jitter = rnd.uniform(-length * 0.12, length * 0.12)
         p = c.beginPath()
-        p.moveTo(x, trunk_top - height * 0.02)
-        p.curveTo(x + (ex - x) * 0.4, trunk_top + (ey - trunk_top) * 0.3,
-                  x + (ex - x) * 0.7, ey, ex, ey)
+        p.moveTo(x, trunk_top - (trunk_top - base_y) * 0.04)
+        p.curveTo(midx + jitter, midy, x + (ex - x) * 0.75, ey - (ey - midy) * 0.2, ex, ey)
         c.drawPath(p, stroke=1, fill=0)
         branch_ends.append((ex, ey))
-
-    canopy_r = height * 0.4 * spread
-    canopy_cx, canopy_cy = x, trunk_top + canopy_r * 0.6
     c.restoreState()
-    _puffy_blob(c, canopy_cx, canopy_cy, canopy_r, lobes=10,
-                bulge_range=(0.85, 1.05), y_squash=0.78,
-                width_line=width_line, seed=seed)
+    return branch_ends
+
+
+def cherry_blossom_tree(c, x, base_y, height, spread=1.0, blossoms=22, seed=0,
+                         width_line=LINE_DETAIL):
+    rnd = random.Random(seed)
+    trunk_top = base_y + height * 0.34
+    _tree_trunk_and_branches(c, x, base_y, trunk_top, n_branches=5,
+                              branch_len_range=(height * 0.22, height * 0.36),
+                              spread=spread, width_line=width_line, seed=seed)
+
+    canopy_r = height * 0.42 * spread
+    canopy_cx, canopy_cy = x, trunk_top + canopy_r * 0.58
+    _foliage_mass(c, canopy_cx, canopy_cy, canopy_r, n_clusters=6,
+                  cluster_r_range=(0.42, 0.6), y_squash=0.78,
+                  width_line=width_line, seed=seed, texture=False)
+
     c.saveState()
     c.setLineWidth(width_line)
-
     for _ in range(blossoms):
         a = rnd.uniform(0, 2 * math.pi)
-        rr = canopy_r * rnd.uniform(0.15, 1.0)
+        rr = canopy_r * rnd.uniform(0.1, 1.05)
         bx = canopy_cx + rr * math.sin(a)
         by = canopy_cy + rr * math.cos(a) * 0.75
-        _mini_blossom(c, bx, by, height * 0.032, width_line=LINE_FAR)
+        _mini_blossom(c, bx, by, height * rnd.uniform(0.022, 0.034), width_line=LINE_FAR)
     c.restoreState()
 
 
@@ -306,40 +408,27 @@ def _maple_leaf(c, x, y, size, angle=0.0, width_line=LINE_FAR):
     c.restoreState()
 
 
-def maple_tree(c, x, base_y, height, spread=1.0, leaves=14, seed=0, width_line=LINE_DETAIL):
+def maple_tree(c, x, base_y, height, spread=1.0, leaves=26, seed=0, width_line=LINE_DETAIL):
     rnd = random.Random(seed)
-    c.saveState()
-    c.setLineWidth(width_line)
     trunk_top = base_y + height * 0.3
-    c.line(x, base_y, x, trunk_top)
-    branch_ends = []
-    for i in range(5):
-        a = rnd.uniform(-1.2, 1.2)
-        length = height * rnd.uniform(0.28, 0.42)
-        ex = x + math.sin(a) * length * spread
-        ey = trunk_top + abs(math.cos(a)) * length * 0.55
-        p = c.beginPath()
-        p.moveTo(x, trunk_top - height * 0.02)
-        p.curveTo(x + (ex - x) * 0.4, trunk_top + (ey - trunk_top) * 0.3,
-                  x + (ex - x) * 0.7, ey, ex, ey)
-        c.drawPath(p, stroke=1, fill=0)
-        branch_ends.append((ex, ey))
+    _tree_trunk_and_branches(c, x, base_y, trunk_top, n_branches=6,
+                              branch_len_range=(height * 0.26, height * 0.40),
+                              spread=spread, width_line=width_line, seed=seed)
 
     canopy_r = height * 0.4 * spread
     canopy_cx, canopy_cy = x, trunk_top + canopy_r * 0.55
-    c.restoreState()
-    _puffy_blob(c, canopy_cx, canopy_cy, canopy_r, lobes=9,
-                bulge_range=(0.8, 1.05), y_squash=0.78,
-                width_line=width_line, seed=seed)
+    _foliage_mass(c, canopy_cx, canopy_cy, canopy_r, n_clusters=6,
+                  cluster_r_range=(0.42, 0.6), y_squash=0.78,
+                  width_line=width_line, seed=seed, texture=False)
+
     c.saveState()
     c.setLineWidth(width_line)
-
     for _ in range(leaves):
         a = rnd.uniform(0, 2 * math.pi)
-        rr = canopy_r * rnd.uniform(0.1, 1.0)
+        rr = canopy_r * rnd.uniform(0.1, 1.05)
         lx = canopy_cx + rr * math.sin(a)
         ly = canopy_cy + rr * math.cos(a) * 0.75
-        _maple_leaf(c, lx, ly, height * 0.045, angle=rnd.uniform(0, math.pi))
+        _maple_leaf(c, lx, ly, height * rnd.uniform(0.035, 0.05), angle=rnd.uniform(0, math.pi))
     c.restoreState()
 
 
@@ -371,7 +460,15 @@ def torii_gate(c, cx, base_y, width, height, width_line=LINE_MAIN):
     c.drawPath(p2, stroke=1, fill=0)
     c.rect(cx - width * 0.035, base_y + height * 0.63, width * 0.07, height * 0.14,
            stroke=1, fill=0)
+    c.setLineWidth(LINE_FAR)
+    c.ellipse(cx - half - width * 0.02, base_y - height * 0.015,
+              cx - half + width * 0.08, base_y + height * 0.02, stroke=1, fill=0)
+    c.ellipse(cx + half - width * 0.08, base_y - height * 0.015,
+              cx + half + width * 0.02, base_y + height * 0.02, stroke=1, fill=0)
     c.restoreState()
+    for px in (cx - half + width * 0.03, cx + half - width * 0.03):
+        _bark_texture(c, px, base_y + height * 0.05, px, base_y + height * 0.85,
+                       width_line=LINE_FAR, seed=int(px), count=5)
 
 
 def senbon_torii(c, cx, base_y, width, height, count=6, width_line=LINE_DETAIL):
@@ -396,6 +493,10 @@ def pagoda(c, cx, base_y, width, height, tiers=5, width_line=LINE_MAIN):
         y1 = y0 + tier_h * 0.62
         body_w = w * 0.5
         c.rect(cx - body_w / 2, y0, body_w, tier_h * 0.4, stroke=1, fill=0)
+        c.setLineWidth(LINE_FAR)
+        c.line(cx - body_w * 0.18, y0, cx - body_w * 0.18, y0 + tier_h * 0.4)
+        c.line(cx + body_w * 0.18, y0, cx + body_w * 0.18, y0 + tier_h * 0.4)
+        c.setLineWidth(width_line)
         p = c.beginPath()
         p.moveTo(cx - w / 2, y1)
         p.curveTo(cx - w / 2 - width * 0.03, y1 + tier_h * 0.05,
@@ -405,6 +506,13 @@ def pagoda(c, cx, base_y, width, height, tiers=5, width_line=LINE_MAIN):
         p.curveTo(cx + w * 0.3, y1 + tier_h * 0.28, cx + w / 2 + width * 0.03,
                   y1 + tier_h * 0.05, cx + w / 2, y1)
         c.drawPath(p, stroke=1, fill=0)
+        c.setLineWidth(LINE_FAR)
+        n_tiles = max(5, int(w / (height * 0.05)))
+        for k in range(1, n_tiles):
+            tx = cx - w / 2 + w * k / n_tiles
+            ty = y1 + tier_h * 0.10 * (1 - (2 * abs(k / n_tiles - 0.5)) ** 2)
+            c.line(tx, ty, tx, ty - tier_h * 0.06)
+        c.setLineWidth(width_line)
     spire_base = base_y + tier_h * tiers * 0.78 / tiers * tiers
     top_y = base_y + tier_h * (tiers - 1) + tier_h * 0.34
     c.line(cx, top_y, cx, base_y + height)
@@ -441,6 +549,14 @@ def temple_building(c, cx, base_y, width, height, width_line=LINE_MAIN):
     p.curveTo(cx + w * 0.28, roof_y + roof_h * 0.42,
               cx + w / 2 + width * 0.04, roof_y + roof_h * 0.12, cx + w / 2, roof_y)
     c.drawPath(p, stroke=1, fill=0)
+    # 瓦の質感(軒先に沿った小さな縦ライン)
+    c.setLineWidth(LINE_FAR)
+    n_tiles = max(6, int(w / (height * 0.12)))
+    for k in range(1, n_tiles):
+        t = k / n_tiles
+        tx = cx - w / 2 + w * t
+        ty = roof_y + roof_h * 0.30 * (1 - (2 * abs(t - 0.5)) ** 2) * 0.6
+        c.line(tx, ty, tx, ty - roof_h * 0.05)
     # 破風(屋根の下にもう一段の縁)
     c.setLineWidth(LINE_DETAIL)
     c.line(cx - width * 0.42, roof_y, cx + width * 0.42, roof_y)
@@ -542,14 +658,26 @@ def waves_hokusai(c, x0, x1, base_y, height, width_line=LINE_MAIN, seed=0):
               inner_tip[0], inner_tip[1])
     c.drawPath(p, stroke=1, fill=0)
 
-    # 崩れて飛び散る波頭の指(コンマ形) — 外側の縁に3つほど
-    claws = 3
+    # 波面の櫛状の流線(北斎波の特徴的なディテール)
+    c.setLineWidth(LINE_FAR)
+    for k in range(1, 5):
+        t = k / 5
+        p3 = c.beginPath()
+        p3.moveTo(x0 + span * 0.06 * t, base_y + height * 0.02 * t)
+        p3.curveTo(x0 + span * (0.20 - 0.05 * t), base_y + height * (0.08 - 0.02 * t),
+                   x0 + span * (0.34 - 0.10 * t), base_y + height * (0.12 - 0.03 * t),
+                   outer_start[0] - r * 0.05 * t, outer_start[1] - r * 0.05 * t)
+        c.drawPath(p3, stroke=1, fill=0)
+    c.setLineWidth(width_line)
+
+    # 崩れて飛び散る波頭の指(コンマ形) — 外側の縁に沿って複数、内部に葉脈も追加
+    claws = 5
     for i in range(claws):
         t = i / (claws - 1)
-        bx = outer_start[0] + (outer_top[0] - outer_start[0]) * (0.35 + 0.5 * t)
-        by = outer_start[1] + (outer_top[1] - outer_start[1]) * (0.35 + 0.5 * t)
-        ang = math.radians(-40 - 55 * t)
-        length = r * rnd.uniform(0.16, 0.24)
+        bx = outer_start[0] + (outer_top[0] - outer_start[0]) * (0.25 + 0.55 * t)
+        by = outer_start[1] + (outer_top[1] - outer_start[1]) * (0.25 + 0.55 * t)
+        ang = math.radians(-35 - 65 * t)
+        length = r * rnd.uniform(0.14, 0.24)
         _bamboo_leaf(c, bx, by, length, 1, ang, width_line=LINE_DETAIL)
 
     # 波の裏側のうねり(背景の小波)
