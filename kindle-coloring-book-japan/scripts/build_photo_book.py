@@ -44,6 +44,10 @@ LOCATIONS = [
     ("Kakunodate", "Samurai District, Akita Prefecture", "05_akita_kakunodate.png"),
     ("Yamadera", "Risshaku-ji Temple, Yamagata Prefecture", "06_yamagata_yamadera.png"),
     ("Tsuruga Castle", "Aizuwakamatsu, Fukushima Prefecture", "07_fukushima_tsurugajo.png"),
+    ("Kairakuen Garden", "Mito, Ibaraki Prefecture", "08_ibaraki_kairakuen.png"),
+    ("Nikko Toshogu", "Tochigi Prefecture", "09_tochigi_nikko_toshogu.png"),
+    ("Kusatsu Onsen", "Yubatake, Gunma Prefecture", "10_gunma_kusatsu.png"),
+    ("Kawagoe", "Old Town, Saitama Prefecture", "11_saitama_kawagoe.png"),
 ]
 
 
