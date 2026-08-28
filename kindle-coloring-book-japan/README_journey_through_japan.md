@@ -1,4 +1,4 @@
-# Journey Through Japan — Adult Coloring Book (KDP Paperback)
+# Journey Through Eastern Japan — Adult Coloring Book (KDP Paperback)
 
 `kindle-coloring-book-japan` フォルダ内にある、**手描き風景版(Japanese
 Landscapes)とは別のもう一つの本**です。こちらは、あなたが実際にMidjourney等の
@@ -11,10 +11,11 @@ Landscapes)とは別のもう一つの本**です。こちらは、あなたが�
 
 | ファイル | 内容 |
 |---|---|
-| `build/japan_prefectures_interior.pdf` | 本文原稿。全51ページ（表題1p・奥付1p・名所24p・無地24p・お礼1p）。トリムサイズ 8.5×11 in |
-| `build/journey_through_japan_cover.pdf` | KDPペーパーバック用フルラップ表紙。17.3649 × 11.25 in（背表紙幅 0.1149in、想定51ページ） |
+| `build/journey_through_eastern_japan_interior.pdf` | 本文原稿。全51ページ（表題1p・奥付1p・名所24p・無地24p・お礼1p）。トリムサイズ 8.5×11 in |
+| `build/journey_through_eastern_japan_cover.pdf` | KDPペーパーバック用フルラップ表紙。17.3649 × 11.25 in（背表紙幅 0.1149in、想定51ページ）。裏表紙に三保の松原(富士山)、表表紙に日光東照宮の著者手彩色イラストを使用 |
 | `build/previews_prefectures/*.png` | 表紙・タイトルページ・作例ページのプレビュー |
 | `source_images/` | 提供いただいた各名所の線画（01〜24の連番ファイル名） |
+| `cover_images/` | 表紙用に著者が彩色した2点（三保の松原＝裏表紙、日光東照宮＝表表紙） |
 | `scripts/build_photo_book.py` | 本文PDFのビルダー。`LOCATIONS` リストに (タイトル, 副題, ファイル名) を追加していく方式 |
 | `scripts/build_photo_cover.py` | 表紙PDFのビルダー |
 
@@ -68,9 +69,9 @@ python3 scripts/build_photo_cover.py
 1. https://kdp.amazon.com → **+ Create** → **Paperback**
 2. 言語 English、トリムサイズ **8.5 x 11 in**、用紙 **白色(White)**、
    本文 **黒黒(Black & White) インテリア**、裁ち落とし **なし(No bleed)**
-3. 原稿PDF: `build/japan_prefectures_interior.pdf`
+3. 原稿PDF: `build/journey_through_eastern_japan_interior.pdf`
 4. 表紙: KDPの **Cover Calculator** で寸法を確認してから
-   `build/journey_through_japan_cover.pdf` をアップロード
+   `build/journey_through_eastern_japan_cover.pdf` をアップロード
 5. Online Previewer で全ページを目視確認（特にノド側マージン）
 6. 価格・印税プランを設定 → Publish Your Paperback Book の直前まで到達
 

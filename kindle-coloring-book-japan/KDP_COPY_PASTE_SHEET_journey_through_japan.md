@@ -1,4 +1,4 @@
-# KDP 入力用コピペシート — Journey Through Japan
+# KDP 入力用コピペシート — Journey Through Eastern Japan
 
 KDP (https://kdp.amazon.com) の Paperback 作成フローで、この順番のまま
 各欄にコピー&ペーストしてください。
@@ -14,12 +14,12 @@ English
 
 **Book Title**
 ```
-Journey Through Japan
+Journey Through Eastern Japan
 ```
 
 **Subtitle**
 ```
-An Adult Coloring Book of Iconic Places Across the Prefectures
+An Adult Coloring Book of Iconic Places from Hokkaido to Mie
 ```
 
 **Author — First name / Last name**
@@ -29,7 +29,7 @@ Osakanian
 
 **Description（商品説明）** — HTML簡易タグ（`<br>`など）が使えます
 ```
-Travel page by page across Japan — from the red-crowned cranes of Hokkaido to the great torii and temples of the south — with 24 hand-picked, real-world landmarks brought to life in line art.<br><br>Journey Through Japan is a collection of 24 original, detailed illustrations of real, named locations across Japan — perfect for colorists of every skill level.<br><br>What's inside:<br>- 24 detailed illustrations of real, named locations across Japan<br>- Single-sided pages to prevent marker and gel-pen bleed-through<br>- Large 8.5" x 11" pages, ideal for colored pencils, gel pens, and fine-tip markers<br>- Castles, shrines, temples, festivals, gardens, and natural wonders from Hokkaido to Mie<br><br>Whether you're a seasoned colorist or picking up your first set of pencils, these designs offer a calming, mindful escape from everyday stress.
+Travel page by page across eastern Japan — from the red-crowned cranes of Hokkaido to the great torii and temples of Mie — with 24 hand-picked, real-world landmarks brought to life in line art.<br><br>Journey Through Eastern Japan is a collection of 24 original, detailed illustrations of real, named locations across Hokkaido, Tohoku, Kanto, Koshinetsu, and Chubu — perfect for colorists of every skill level.<br><br>What's inside:<br>- 24 detailed illustrations of real, named locations across eastern Japan<br>- Single-sided pages to prevent marker and gel-pen bleed-through<br>- Large 8.5" x 11" pages, ideal for colored pencils, gel pens, and fine-tip markers<br>- Castles, shrines, temples, festivals, gardens, and natural wonders from Hokkaido to Mie<br><br>Whether you're a seasoned colorist or picking up your first set of pencils, these designs offer a calming, mindful escape from everyday stress.
 ```
 
 **Publishing Rights**
@@ -72,7 +72,7 @@ No
 
 **Manuscript**
 ```
-アップロードファイル: build/japan_prefectures_interior.pdf
+アップロードファイル: build/journey_through_eastern_japan_interior.pdf
 ```
 
 **Print Options**
@@ -90,7 +90,7 @@ Glossy
 **Cover**
 ```
 アップロード方法: Upload a print-ready PDF cover
-アップロードファイル: build/journey_through_japan_cover.pdf
+アップロードファイル: build/journey_through_eastern_japan_cover.pdf
 ```
 ※ アップロード前に必ずKDPの「Cover Calculator」で最終ページ数(想定51)を入力し、
 　寸法(17.3649 x 11.25 in / 背表紙幅 0.1149in)が一致するか確認してください。

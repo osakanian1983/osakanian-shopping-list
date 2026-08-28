@@ -1,21 +1,30 @@
 # -*- coding: utf-8 -*-
 """
-「Journey Through Japan」(都道府県名所版) の KDPペーパーバック用
+「Journey Through Eastern Japan」(都道府県名所版) の KDPペーパーバック用
 フルラップ表紙(裏表紙+背表紙+表表紙)PDFを生成する。
 flower_mandalas / japanese_landscapes 版と同じ計算式・余白ルールを踏襲。
+表紙アートは著者が塗った Miho no Matsubara(裏表紙)と
+Nikko Toshogu(表表紙)を使用。
 
 ★ 実際にアップロードする前に、必ず KDP の
   「表紙計算ツール(Cover Calculator)」で最終ページ数から
   寸法を再計算し、誤差があれば調整してください。
 """
+import os
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import HexColor, white, black
+from reportlab.lib.utils import ImageReader
 
-from compose_cover import compose_cover_scene
 import pdf_fonts
 from pdf_fonts import FONT_REGULAR, FONT_BOLD, FONT_ITALIC
 
 pdf_fonts.register()
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)
+COVER_IMG_DIR = os.path.join(ROOT, "cover_images")
+BACK_COVER_IMG = os.path.join(COVER_IMG_DIR, "cover_back_shizuoka_miho.png")
+FRONT_COVER_IMG = os.path.join(COVER_IMG_DIR, "cover_front_tochigi_nikko.png")
 
 TRIM_W_IN = 8.5
 TRIM_H_IN = 11.0
@@ -34,20 +43,21 @@ BLEED = BLEED_IN * IN
 TRIM_W = TRIM_W_IN * IN
 TRIM_H = TRIM_H_IN * IN
 
-OUT_PATH = "/home/user/osakanian-shopping-list/kindle-coloring-book-japan/build/journey_through_japan_cover.pdf"
+OUT_PATH = "/home/user/osakanian-shopping-list/kindle-coloring-book-japan/build/journey_through_eastern_japan_cover.pdf"
 
-TITLE = "Journey Through Japan"
-SUBTITLE = "An Adult Coloring Book of Iconic Places Across the Prefectures"
+TITLE = "Journey Through Eastern Japan"
+SUBTITLE = "An Adult Coloring Book of Iconic Places from Hokkaido to Mie"
 SUBTITLE2 = "24 Scenic Landmarks"
 AUTHOR = "Osakanian"
 
 BACK_BLURB = [
-    "Travel page by page across Japan — from the red-crowned cranes of",
-    "Hokkaido to the great torii and temples of the south — with 24",
+    "Travel page by page across eastern Japan — from the red-crowned",
+    "cranes of Hokkaido to the great torii and temples of Mie — with 24",
     "hand-picked, real-world landmarks brought to life in line art.",
     "",
     "Inside this book you'll find:",
-    "  - 24 detailed illustrations of real, named locations across Japan",
+    "  - 24 detailed illustrations of real, named locations across",
+    "     eastern Japan",
     "  - Single-sided pages to prevent bleed-through",
     "  - Printed on 8.5\" x 11\" pages, perfect for markers, gel pens,",
     "     colored pencils, or fine-tip markers",
@@ -61,6 +71,16 @@ BACK_BLURB = [
 
 DEEP_INDIGO = HexColor("#3c5068")
 CREAM_BG = white
+
+
+def _draw_fitted_image(c, path, bx0, by0, box_w, box_h):
+    img = ImageReader(path)
+    iw, ih = img.getSize()
+    scale = min(box_w / iw, box_h / ih)
+    dw, dh = iw * scale, ih * scale
+    dx = bx0 + (box_w - dw) / 2
+    dy = by0 + (box_h - dh) / 2
+    c.drawImage(img, dx, dy, width=dw, height=dh)
 
 
 def draw_back_cover(c, x0):
@@ -80,10 +100,10 @@ def draw_back_cover(c, x0):
         c.drawCentredString(cx, y, line)
         y -= 14.5
 
-    box_w, box_h = 2.0 * IN, 1.5 * IN
+    box_w, box_h = 2.6 * IN, 1.95 * IN
     bx0 = cx - box_w / 2
     by0 = BLEED + 0.55 * IN
-    compose_cover_scene(c, bx0, by0, bx0 + box_w, by0 + box_h)
+    _draw_fitted_image(c, BACK_COVER_IMG, bx0, by0, box_w, box_h)
     c.setStrokeColor(black)
     c.setLineWidth(1)
     c.rect(bx0, by0, box_w, box_h, fill=0, stroke=1)
@@ -138,7 +158,7 @@ def draw_front_cover(c, x0):
     box_w, box_h = 6.6 * IN, 5.0 * IN
     bx0 = cx - box_w / 2
     by0 = BLEED + 1.0 * IN
-    compose_cover_scene(c, bx0, by0, bx0 + box_w, by0 + box_h)
+    _draw_fitted_image(c, FRONT_COVER_IMG, bx0, by0, box_w, box_h)
     c.setStrokeColor(black)
     c.setLineWidth(1.4)
     c.rect(bx0, by0, box_w, box_h, fill=0, stroke=1)

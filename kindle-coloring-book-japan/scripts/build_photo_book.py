@@ -25,10 +25,10 @@ pdf_fonts.register()
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 SOURCE_DIR = os.path.join(ROOT, "source_images")
-OUT_PATH = os.path.join(ROOT, "build", "japan_prefectures_interior.pdf")
+OUT_PATH = os.path.join(ROOT, "build", "journey_through_eastern_japan_interior.pdf")
 
-BOOK_TITLE = "Journey Through Japan"
-BOOK_SUBTITLE = "An Adult Coloring Book of Iconic Places Across the Prefectures"
+BOOK_TITLE = "Journey Through Eastern Japan"
+BOOK_SUBTITLE = "An Adult Coloring Book of Iconic Places from Hokkaido to Mie"
 AUTHOR_NAME = "Osakanian"
 YEAR = "2026"
 
