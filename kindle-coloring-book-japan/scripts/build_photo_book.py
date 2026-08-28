@@ -51,6 +51,11 @@ LOCATIONS = [
     ("Sensoji Kaminarimon", "Asakusa, Tokyo", "12_tokyo_sensoji.png"),
     ("Nihonji Great Buddha", "Mount Nokogiri, Chiba Prefecture", "13_chiba_nihonji_daibutsu.png"),
     ("Great Buddha of Kamakura", "Kanagawa Prefecture", "14_kanagawa_kamakura_daibutsu.png"),
+    ("Sado Tarai-bune", "Tub Boats, Niigata Prefecture", "15_niigata_sado_taraibune.png"),
+    ("Tateyama Kurobe Alpine Route", "Yuki-no-Otani Snow Corridor, Toyama Prefecture", "16_toyama_tateyama_kurobe.png"),
+    ("Kenrokuen Garden", "Kanazawa, Ishikawa Prefecture", "17_ishikawa_kenrokuen.png"),
+    ("Tojinbo Cliffs", "Fukui Prefecture", "18_fukui_tojinbo.png"),
+    ("Lake Kawaguchi", "Mount Fuji, Yamanashi Prefecture", "19_yamanashi_kawaguchiko.png"),
 ]
 
 
