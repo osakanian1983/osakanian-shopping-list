@@ -56,6 +56,11 @@ LOCATIONS = [
     ("Kenrokuen Garden", "Kanazawa, Ishikawa Prefecture", "17_ishikawa_kenrokuen.png"),
     ("Tojinbo Cliffs", "Fukui Prefecture", "18_fukui_tojinbo.png"),
     ("Lake Kawaguchi", "Mount Fuji, Yamanashi Prefecture", "19_yamanashi_kawaguchiko.png"),
+    ("Matsumoto Castle", "Nagano Prefecture", "20_nagano_matsumotojo.png"),
+    ("Shirakawa-go", "Gifu Prefecture", "21_gifu_shirakawago.png"),
+    ("Miho no Matsubara", "Shizuoka Prefecture", "22_shizuoka_mihonomatsubara.png"),
+    ("Nagoya Castle", "Aichi Prefecture", "23_aichi_nagoyajo.png"),
+    ("Ise Grand Shrine", "Mie Prefecture", "24_mie_isejingu.png"),
 ]
 
 
