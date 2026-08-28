@@ -100,9 +100,9 @@ def draw_back_cover(c, x0):
         c.drawCentredString(cx, y, line)
         y -= 14.5
 
-    box_w, box_h = 2.6 * IN, 1.95 * IN
+    box_w, box_h = 6.3 * IN, 4.2 * IN
     bx0 = cx - box_w / 2
-    by0 = BLEED + 0.55 * IN
+    by0 = 1.9 * IN
     _draw_fitted_image(c, BACK_COVER_IMG, bx0, by0, box_w, box_h)
     c.setStrokeColor(black)
     c.setLineWidth(1)
