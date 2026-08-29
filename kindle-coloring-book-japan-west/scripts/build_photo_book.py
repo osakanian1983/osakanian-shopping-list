@@ -50,6 +50,11 @@ LOCATIONS = [
     ("Izumo Taisha", "Shimane Prefecture", "32_shimane_izumo_taisha.png"),
     ("Korakuen Garden", "Okayama Prefecture", "33_okayama_korakuen.png"),
     ("Itsukushima Shrine", "Miyajima, Hiroshima Prefecture", "34_hiroshima_itsukushima.png"),
+    ("Motonosumi Shrine", "Yamaguchi Prefecture", "35_yamaguchi_motonosumi.png"),
+    ("Naruto Whirlpools", "Tokushima Prefecture", "36_tokushima_naruto.png"),
+    ("Ritsurin Garden", "Kagawa Prefecture", "37_kagawa_ritsurin.png"),
+    ("Dogo Onsen", "Ehime Prefecture", "38_ehime_dogo_onsen.png"),
+    ("Shimanto River", "Chinka-bashi Bridge, Kochi Prefecture", "39_kochi_shimanto.png"),
 ]
 
 
