@@ -59,6 +59,10 @@ LOCATIONS = [
     ("Yutoku Inari Shrine", "Saga Prefecture", "41_saga_yutoku_inari.png"),
     ("Meganebashi", "Spectacles Bridge, Nagasaki Prefecture", "42_nagasaki_meganebashi.png"),
     ("Kumamoto Castle", "Kumamoto Prefecture", "43_kumamoto_castle.png"),
+    ("Beppu Onsen", "Oita Prefecture", "44_oita_beppu.png"),
+    ("Takachiho Gorge", "Miyazaki Prefecture", "45_miyazaki_takachiho.png"),
+    ("Sakurajima", "Kagoshima Prefecture", "46_kagoshima_sakurajima.png"),
+    ("Manzamo", "Onna Village, Okinawa Prefecture", "47_okinawa_manzamo.png"),
 ]
 
 
