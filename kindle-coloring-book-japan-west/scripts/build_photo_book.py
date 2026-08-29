@@ -55,6 +55,10 @@ LOCATIONS = [
     ("Ritsurin Garden", "Kagawa Prefecture", "37_kagawa_ritsurin.png"),
     ("Dogo Onsen", "Ehime Prefecture", "38_ehime_dogo_onsen.png"),
     ("Shimanto River", "Chinka-bashi Bridge, Kochi Prefecture", "39_kochi_shimanto.png"),
+    ("Dazaifu Tenmangu", "Fukuoka Prefecture", "40_fukuoka_dazaifu.png"),
+    ("Yutoku Inari Shrine", "Saga Prefecture", "41_saga_yutoku_inari.png"),
+    ("Meganebashi", "Spectacles Bridge, Nagasaki Prefecture", "42_nagasaki_meganebashi.png"),
+    ("Kumamoto Castle", "Kumamoto Prefecture", "43_kumamoto_castle.png"),
 ]
 
 
