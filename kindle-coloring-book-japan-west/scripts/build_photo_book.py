@@ -45,6 +45,11 @@ LOCATIONS = [
     ("Dotonbori", "Glico Sign, Osaka Prefecture", "27_osaka_dotonbori.png"),
     ("Himeji Castle", "Hyogo Prefecture", "28_hyogo_himeji_castle.png"),
     ("Todai-ji", "Nara Park Deer, Nara Prefecture", "29_nara_todaiji.png"),
+    ("Nachi Falls", "Seiganto-ji Pagoda, Wakayama Prefecture", "30_wakayama_nachi.png"),
+    ("Tottori Sand Dunes", "Tottori Prefecture", "31_tottori_sakyu.png"),
+    ("Izumo Taisha", "Shimane Prefecture", "32_shimane_izumo_taisha.png"),
+    ("Korakuen Garden", "Okayama Prefecture", "33_okayama_korakuen.png"),
+    ("Itsukushima Shrine", "Miyajima, Hiroshima Prefecture", "34_hiroshima_itsukushima.png"),
 ]
 
 
