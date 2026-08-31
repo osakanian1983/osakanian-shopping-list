@@ -45,6 +45,11 @@ LOCATIONS = [
     ("Wanko Soba", "All-You-Can-Eat Buckwheat Noodles, Iwate Prefecture", "03_iwate_wankosoba.png"),
     ("Gyutan", "Grilled Beef Tongue, Sendai, Miyagi Prefecture", "04_miyagi_gyutan.png"),
     ("Kiritanpo Nabe", "Rice Skewer Hot Pot, Akita Prefecture", "05_akita_kiritanpo.png"),
+    ("Yonezawa Beef", "Grilled Wagyu, Yamagata Prefecture", "06_yamagata_yonezawagyu.png"),
+    ("Kitakata Ramen", "Fukushima Prefecture", "07_fukushima_kitakataramen.png"),
+    ("Anko Nabe", "Monkfish Hot Pot, Ibaraki Prefecture", "08_ibaraki_ankonabe.png"),
+    ("Gyoza", "Utsunomiya, Tochigi Prefecture", "09_tochigi_gyoza.png"),
+    ("Yaki Manju", "Grilled Sweet Bean Buns, Gunma Prefecture", "10_gunma_yakimanju.png"),
 ]
 
 
