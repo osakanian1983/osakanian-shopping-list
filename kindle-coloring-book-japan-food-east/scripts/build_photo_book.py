@@ -55,6 +55,11 @@ LOCATIONS = [
     ("Edomae Sushi", "Tokyo", "13_tokyo_edomaezushi.png"),
     ("Shirasu-don", "Whitebait Rice Bowl, Enoshima, Kanagawa Prefecture", "14_kanagawa_shirasudon.png"),
     ("Hegi Soba", "Niigata Prefecture", "15_niigata_hegisoba.png"),
+    ("Shiroebi-don", "White Shrimp Rice Bowl, Toyama Prefecture", "16_toyama_shiroebidon.png"),
+    ("Kanazawa Oden", "Ishikawa Prefecture", "17_ishikawa_kanazawaoden.png"),
+    ("Echizen Oroshi Soba", "Fukui Prefecture", "18_fukui_echizen_oroshisoba.png"),
+    ("Hoto", "Yamanashi Prefecture", "19_yamanashi_hoto.png"),
+    ("Oyaki", "Stuffed Buckwheat Dumpling, Nagano Prefecture", "20_nagano_oyaki.png"),
 ]
 
 
