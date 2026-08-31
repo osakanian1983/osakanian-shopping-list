@@ -50,6 +50,11 @@ LOCATIONS = [
     ("Anko Nabe", "Monkfish Hot Pot, Ibaraki Prefecture", "08_ibaraki_ankonabe.png"),
     ("Gyoza", "Utsunomiya, Tochigi Prefecture", "09_tochigi_gyoza.png"),
     ("Yaki Manju", "Grilled Sweet Bean Buns, Gunma Prefecture", "10_gunma_yakimanju.png"),
+    ("Waraji Katsudon", "Chichibu, Saitama Prefecture", "11_saitama_waraji_katsudon.png"),
+    ("Futomaki Matsuri-zushi", "Boso Peninsula, Chiba Prefecture", "12_chiba_futomaki_matsurizushi.png"),
+    ("Edomae Sushi", "Tokyo", "13_tokyo_edomaezushi.png"),
+    ("Shirasu-don", "Whitebait Rice Bowl, Enoshima, Kanagawa Prefecture", "14_kanagawa_shirasudon.png"),
+    ("Hegi Soba", "Niigata Prefecture", "15_niigata_hegisoba.png"),
 ]
 
 
