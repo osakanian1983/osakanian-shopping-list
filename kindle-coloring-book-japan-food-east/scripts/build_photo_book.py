@@ -60,6 +60,10 @@ LOCATIONS = [
     ("Echizen Oroshi Soba", "Fukui Prefecture", "18_fukui_echizen_oroshisoba.png"),
     ("Hoto", "Yamanashi Prefecture", "19_yamanashi_hoto.png"),
     ("Oyaki", "Stuffed Buckwheat Dumpling, Nagano Prefecture", "20_nagano_oyaki.png"),
+    ("Hida Beef", "Gifu Prefecture", "21_gifu_hidagyu.png"),
+    ("Unaju", "Grilled Eel over Rice, Hamamatsu, Shizuoka Prefecture", "22_shizuoka_unaju.png"),
+    ("Hitsumabushi", "Nagoya, Aichi Prefecture", "23_aichi_hitsumabushi.png"),
+    ("Ise Udon", "Mie Prefecture", "24_mie_iseudon.png"),
 ]
 
 
