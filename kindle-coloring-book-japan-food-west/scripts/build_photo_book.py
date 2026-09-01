@@ -45,6 +45,11 @@ LOCATIONS = [
     ("Takoyaki", "Octopus Balls, Osaka Prefecture", "27_osaka_takoyaki.png"),
     ("Kobe Beef", "Hyogo Prefecture", "28_hyogo_kobegyu.png"),
     ("Kakinoha-zushi", "Persimmon Leaf Sushi, Nara Prefecture", "29_nara_kakinohazushi.png"),
+    ("Hayazushi", "Kishu-Style Pressed Sushi, Wakayama Prefecture", "30_wakayama_hayazushi.png"),
+    ("Matsuba Crab", "Snow Crab, Tottori Prefecture", "31_tottori_matsubagani.png"),
+    ("Izumo Soba", "Shimane Prefecture", "32_shimane_izumosoba.png"),
+    ("Mamakari-zushi", "Okayama Prefecture", "33_okayama_mamakarizushi.png"),
+    ("Hiroshima-Style Okonomiyaki", "Hiroshima Prefecture", "34_hiroshima_okonomiyaki.png"),
 ]
 
 
