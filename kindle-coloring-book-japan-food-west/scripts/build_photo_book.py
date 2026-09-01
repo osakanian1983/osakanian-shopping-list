@@ -50,6 +50,11 @@ LOCATIONS = [
     ("Izumo Soba", "Shimane Prefecture", "32_shimane_izumosoba.png"),
     ("Mamakari-zushi", "Okayama Prefecture", "33_okayama_mamakarizushi.png"),
     ("Hiroshima-Style Okonomiyaki", "Hiroshima Prefecture", "34_hiroshima_okonomiyaki.png"),
+    ("Shimonoseki Fugu", "Blowfish Sashimi, Yamaguchi Prefecture", "35_yamaguchi_fugu.png"),
+    ("Tokushima Ramen", "Tokushima Prefecture", "36_tokushima_ramen.png"),
+    ("Kamaage Udon", "Kagawa Prefecture", "37_kagawa_kamaageudon.png"),
+    ("Taimeshi", "Sea Bream Rice, Ehime Prefecture", "38_ehime_taimeshi.png"),
+    ("Katsuo no Tataki", "Seared Bonito, Kochi Prefecture", "39_kochi_katsuo_tataki.png"),
 ]
 
 
