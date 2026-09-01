@@ -55,6 +55,11 @@ LOCATIONS = [
     ("Kamaage Udon", "Kagawa Prefecture", "37_kagawa_kamaageudon.png"),
     ("Taimeshi", "Sea Bream Rice, Ehime Prefecture", "38_ehime_taimeshi.png"),
     ("Katsuo no Tataki", "Seared Bonito, Kochi Prefecture", "39_kochi_katsuo_tataki.png"),
+    ("Motsunabe", "Offal Hot Pot, Hakata, Fukuoka Prefecture", "40_fukuoka_motsunabe.png"),
+    ("Yobuko Ika", "Fresh Squid, Saga Prefecture", "41_saga_yobukoika.png"),
+    ("Nagasaki Champon", "Nagasaki Prefecture", "42_nagasaki_champon.png"),
+    ("Basashi", "Horse Sashimi, Kumamoto Prefecture", "43_kumamoto_basashi.png"),
+    ("Toriten", "Fried Chicken Tempura, Oita Prefecture", "44_oita_toriten.png"),
 ]
 
 
