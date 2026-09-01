@@ -60,6 +60,9 @@ LOCATIONS = [
     ("Nagasaki Champon", "Nagasaki Prefecture", "42_nagasaki_champon.png"),
     ("Basashi", "Horse Sashimi, Kumamoto Prefecture", "43_kumamoto_basashi.png"),
     ("Toriten", "Fried Chicken Tempura, Oita Prefecture", "44_oita_toriten.png"),
+    ("Chicken Nanban", "Miyazaki Prefecture", "45_miyazaki_chickennanban.png"),
+    ("Kurobuta", "Black Pork Shabu-Shabu, Kagoshima Prefecture", "46_kagoshima_kurobuta.png"),
+    ("Goya Champuru", "Bitter Melon Stir-Fry, Okinawa Prefecture", "47_okinawa_goyachampuru.png"),
 ]
 
 
