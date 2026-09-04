@@ -136,6 +136,10 @@ body {
 
 .ghost-btn.danger { color: var(--danger); border-color: var(--danger); }
 
+.index-actions {
+  margin-bottom: 0.75rem;
+}
+
 .bulk-add {
   border: 1px solid var(--border);
   border-radius: 8px;

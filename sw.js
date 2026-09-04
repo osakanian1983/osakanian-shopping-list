@@ -1,4 +1,4 @@
-const CACHE_NAME = "jp-stock-screener-v1";
+const CACHE_NAME = "jp-stock-screener-v2";
 const ASSETS = [
   "./index.html",
   "./style.css",
@@ -6,6 +6,7 @@ const ASSETS = [
   "./js/dataProvider.js",
   "./js/indicators.js",
   "./js/screener.js",
+  "./js/indices.js",
   "./manifest.json",
   "./icon.svg",
 ];

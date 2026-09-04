@@ -1,5 +1,6 @@
 import { fetchYahooChart, parseCSV } from "./dataProvider.js";
 import { CONDITIONS, analyze, evaluate, matchedLabels } from "./screener.js";
+import { NIKKEI_225 } from "./indices.js";
 
 const WATCHLIST_KEY = "jp-stock-screener.watchlist";
 const CACHE_KEY = "jp-stock-screener.priceCache";
@@ -44,6 +45,7 @@ const resultsEmptyEl = document.getElementById("results-empty");
 const bulkInputEl = document.getElementById("bulk-input");
 const bulkAddBtn = document.getElementById("bulk-add-btn");
 const sampleAddBtn = document.getElementById("sample-add-btn");
+const nikkei225AddBtn = document.getElementById("nikkei225-add-btn");
 const csvDialogEl = document.getElementById("csv-dialog");
 const csvFormEl = document.getElementById("csv-form");
 const csvFileInputEl = document.getElementById("csv-file-input");
@@ -231,6 +233,15 @@ const SAMPLE_STOCKS = [
 sampleAddBtn.addEventListener("click", () => {
   const added = addStocksBulk(SAMPLE_STOCKS);
   fetchStatusEl.textContent = `サンプル銘柄を${added}件追加しました。「全銘柄のデータを取得」で取得できます。`;
+});
+
+nikkei225AddBtn.addEventListener("click", () => {
+  if (watchlist.length > 0) {
+    const ok = confirm(`日経225の225銘柄を追加します（既存の${watchlist.length}銘柄はそのまま残ります）。よろしいですか？`);
+    if (!ok) return;
+  }
+  const added = addStocksBulk(NIKKEI_225);
+  fetchStatusEl.textContent = `日経225から${added}銘柄を追加しました。「全銘柄のデータを取得」は225件分の取得に数分かかります。`;
 });
 
 // ---- データ取得 ----

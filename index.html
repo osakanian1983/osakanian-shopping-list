@@ -17,6 +17,7 @@
     <p class="app-subtitle">
       無料データ(Yahoo Finance非公式API)でテクニカル条件に合う銘柄を抽出します。
       取得できない場合はCSV取込で補完してください。将来的に有料APIとの連携も検討予定です。
+      日経225の銘柄リストはスナップショットのため、実際の構成と異なる場合があります。
     </p>
   </header>
 
@@ -31,12 +32,14 @@
     <ul id="watchlist" class="watchlist"></ul>
     <p id="watchlist-empty" class="empty-message" hidden>銘柄コードを追加してください。</p>
 
+    <div class="index-actions">
+      <button id="nikkei225-add-btn" type="button" class="ghost-btn">日経225を一括追加（225銘柄）</button>
+    </div>
+
     <details class="bulk-add">
-      <summary>日経225・TOPIXなど複数銘柄をまとめて登録</summary>
+      <summary>その他の銘柄をまとめて登録</summary>
       <p class="dialog-note">
-        日経平均プロフィールやJPX公式サイトなどで確認した銘柄コード一覧をコピーして貼り付けてください
-        （改行・カンマ・スペース区切り、「コード,銘柄名」形式にも対応）。
-        このアプリ自体には最新の構成銘柄リストは内蔵していません（自動取得できる正確な情報源が無いため）。
+        コード一覧をコピーして貼り付けてください（改行・カンマ・スペース区切り、「コード,銘柄名」形式にも対応）。
       </p>
       <textarea id="bulk-input" class="bulk-textarea" rows="4" placeholder="例:&#10;7203,トヨタ自動車&#10;6758,ソニーグループ&#10;9432 9433 9984"></textarea>
       <div class="bulk-actions">
