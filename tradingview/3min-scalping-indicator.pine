@@ -4,27 +4,36 @@ indicator("3分足デイトレ 売買タイミング", shorttitle="3min Signal",
 // ========================================================
 // 3分足デイトレード用 売買タイミング表示インジケーター
 //
-// ロジック概要:
-//   1. EMA(短期)とEMA(長期)のゴールデンクロス/デッドクロスを起点に
-//      「買い候補 / 売り候補」を判定
-//   2. VWAPをトレンドフィルターとして使用
-//      (VWAPより上でのみ買いシグナル、下でのみ売りシグナルを採用)
-//   3. RSIで高値掴み・安値掴みを避けるフィルターをかける
-//   4. 出来高が直近平均を上回っているかを確認フィルターとして追加
-//   5. 上位足(既定15分足)のEMAトレンド方向をスコアに加味
-//   2〜5はAND(全部必須)ではなく「4条件中いくつクリアしたか」のスコア制。
-//   しきい値(既定3/4)以上ならEMAクロスの足で「確定シグナル」として矢印+アラート。
-//   しきい値未満でもEMAクロス自体は発生していれば「参考シグナル」として薄く表示可能
-//   (だましを減らすほどシグナル数は減るため、しきい値で好みに調整する)
+// 「シグナル方式(切り替え)」グループの signalMode で、表示方式を2つから選べる:
 //
-//   6. 反発(リバーサル)シグナル: EMAクロスは底/天井を打ってから確定するため
-//      構造的に遅れる。ストキャスティクスが売られすぎ/買われすぎ圏で交差した
-//      時点をより早い反発の目安として、EMAクロス系とは別に「反発買/反発売」
-//      (ひし形)で表示する。上位足トレンドが追いつく前の早い転換を拾うための
-//      シグナルなので、既定では上位足フィルターの対象外にしている。
+//  A) 反発型(トレンド一致フィルター) [既定]
+//     ストキャスティクス(%K/%D)が売られすぎ/買われすぎ圏で交差した時点を
+//     「反発シグナル」(ひし形)として表示する。EMAクロスを待たないため、
+//     底/天井圏でのより早いタイミングを拾える。
+//     さらに上位足(既定15分足)のトレンド方向と一致するかどうかで表示を分ける:
+//       - 順張り(トレンド一致、例:上昇トレンド中の押し目買い) → 濃い表示・太字
+//       - 逆行(トレンドに逆らう、例:上昇トレンド中の戻り売り) → 薄く小さい表示
+//     「反発型: トレンドに逆行するシグナルを非表示にする」をONにすると逆行分は
+//     完全非表示にできる。
+//
+//  B) EMAクロス型(スコア制)
+//     EMA9/21のゴールデンクロス/デッドクロスを起点に、VWAP・RSI・出来高・
+//     上位足トレンドの4条件のうち何個クリアしたか(スコア)がしきい値
+//     (既定3/4)以上なら「確定シグナル」(▲買/▼売)として表示する。
+//     しきい値未満でもEMAクロス自体が発生していれば「参考シグナル」として
+//     薄く表示できる。EMAクロス起点のため反応がやや遅い。
+//
+//  どちらのモードでも計算自体は常に行われており、signalModeの選択で
+//  表示/アラート対象を切り替えているだけなので、いつでも即座に比較できる。
 // ========================================================
 
 // ---------- 入力パラメータ ----------
+grpMode = "シグナル方式(切り替え)"
+signalMode = input.string("反発型(トレンド一致フィルター)", "表示するシグナル方式",
+     options=["反発型(トレンド一致フィルター)", "EMAクロス型(スコア制)"], group=grpMode,
+     tooltip="反発型: ストキャスティクスの反発をメインに使い、トレンド方向と一致するかどうかで濃淡を分ける方式。\nEMAクロス型: EMAクロス+スコア制をメインに使う従来方式。\nどちらが自分の相場観に合うか、切り替えて試してください。")
+hideCounterTrendReversal = input.bool(false, "反発型: トレンドに逆行するシグナルを非表示にする(OFFなら薄く表示)", group=grpMode)
+
 grpEma = "移動平均線 (トレンド判定)"
 emaFastLen = input.int(9, "EMA 短期", minval=1, group=grpEma)
 emaSlowLen = input.int(21, "EMA 長期", minval=1, group=grpEma)
@@ -93,6 +102,10 @@ htfOkSell = not useHtfFilter or htfDowntrend
 // 選択した上位足が現在のチャート足以下になっていないかの簡易チェック
 htfTooLow = timeframe.in_seconds(htfTimeframe) <= timeframe.in_seconds(timeframe.period)
 
+// シグナル方式の切り替え
+showReversalMode = signalMode == "反発型(トレンド一致フィルター)"
+showEmaCrossMode = signalMode == "EMAクロス型(スコア制)"
+
 // EMAクロス(トレンド転換の起点)
 crossUp = ta.crossover(emaFast, emaSlow)
 crossDn = ta.crossunder(emaFast, emaSlow)
@@ -131,27 +144,47 @@ reversalSellRaw = ta.crossunder(stochK, stochD) and stochD > stochOverbought
 reversalBuySignal = useReversalSignal and reversalBuyRaw and volOk and inSession and (not reversalRequireHtf or htfOkBuy)
 reversalSellSignal = useReversalSignal and reversalSellRaw and volOk and inSession and (not reversalRequireHtf or htfOkSell)
 
+// トレンド一致判定(反発型モード用)
+// 買い反発: 上位足が上昇中なら「押し目買い」= 順張りで信頼度が高い。下降中の買い反発は「逆張り(落ちてくるナイフ)」で信頼度が低い
+// 売り反発: 上位足が下降中なら「戻り売り」= 順張りで信頼度が高い。上昇中の売り反発は「逆張り(上昇トレンドへの逆らい)」で信頼度が低い
+reversalBuyAligned = not useHtfFilter or htfUptrend
+reversalSellAligned = not useHtfFilter or htfDowntrend
+
+reversalBuyShow = showReversalMode and reversalBuySignal and (reversalBuyAligned or not hideCounterTrendReversal)
+reversalSellShow = showReversalMode and reversalSellSignal and (reversalSellAligned or not hideCounterTrendReversal)
+reversalBuyShowAligned = reversalBuyShow and reversalBuyAligned
+reversalBuyShowCounter = reversalBuyShow and not reversalBuyAligned
+reversalSellShowAligned = reversalSellShow and reversalSellAligned
+reversalSellShowCounter = reversalSellShow and not reversalSellAligned
+
 // ---------- 描画 ----------
 plot(emaFast, "EMA短期", color=color.new(color.orange, 0), linewidth=1)
 plot(emaSlow, "EMA長期", color=color.new(color.blue, 0), linewidth=1)
 plot(vwapVal, "VWAP", color=color.new(color.purple, 0), linewidth=2)
 
-plotshape(buySignal, title="買いシグナル", style=shape.triangleup, location=location.belowbar,
+// EMAクロス型モードのシグナル(このモードを選んでいる時のみ表示)
+plotshape(showEmaCrossMode and buySignal, title="[EMA型]買いシグナル", style=shape.triangleup, location=location.belowbar,
      color=color.new(color.green, 0), size=size.small, text="買")
-plotshape(sellSignal, title="売りシグナル", style=shape.triangledown, location=location.abovebar,
+plotshape(showEmaCrossMode and sellSignal, title="[EMA型]売りシグナル", style=shape.triangledown, location=location.abovebar,
      color=color.new(color.red, 0), size=size.small, text="売")
 
 // 参考シグナル(条件未確認だがEMAクロス自体は発生。だましを含むので薄い表示)
-plotshape(earlyBuySignal, title="参考シグナル(買い候補)", style=shape.triangleup, location=location.belowbar,
+plotshape(showEmaCrossMode and earlyBuySignal, title="[EMA型]参考シグナル(買い候補)", style=shape.triangleup, location=location.belowbar,
      color=color.new(color.green, 70), size=size.tiny)
-plotshape(earlySellSignal, title="参考シグナル(売り候補)", style=shape.triangledown, location=location.abovebar,
+plotshape(showEmaCrossMode and earlySellSignal, title="[EMA型]参考シグナル(売り候補)", style=shape.triangledown, location=location.abovebar,
      color=color.new(color.red, 70), size=size.tiny)
 
-// 反発シグナル(ストキャスティクス。EMAクロスより早い底/天井圏のタイミング)
-plotshape(reversalBuySignal, title="反発買いシグナル", style=shape.diamond, location=location.belowbar,
+// 反発型モードのシグナル(このモードを選んでいる時のみ表示)
+// 順張り(トレンドと一致): 濃い表示、太字ラベル → 押し目買い/戻り売りとして信頼度が高い
+plotshape(reversalBuyShowAligned, title="[反発型]買い(順張り)", style=shape.diamond, location=location.belowbar,
      color=color.new(color.aqua, 0), size=size.small, text="反発買")
-plotshape(reversalSellSignal, title="反発売りシグナル", style=shape.diamond, location=location.abovebar,
+plotshape(reversalSellShowAligned, title="[反発型]売り(順張り)", style=shape.diamond, location=location.abovebar,
      color=color.new(color.fuchsia, 0), size=size.small, text="反発売")
+// 逆行(トレンドに逆らう): 薄く小さい表示 → 新規エントリーではなく利確や警戒の参考程度に
+plotshape(reversalBuyShowCounter, title="[反発型]買い(逆行・参考)", style=shape.diamond, location=location.belowbar,
+     color=color.new(color.aqua, 75), size=size.tiny)
+plotshape(reversalSellShowCounter, title="[反発型]売り(逆行・参考)", style=shape.diamond, location=location.abovebar,
+     color=color.new(color.fuchsia, 75), size=size.tiny)
 
 // トレンド背景色(VWAPに対する上下で軽く色分け)
 bgcolor(close > vwapVal ? color.new(color.green, 92) : color.new(color.red, 92), title="VWAPトレンド背景")
@@ -164,10 +197,12 @@ if showHtfLabel and barstate.islast
     table.cell(htfTable, 0, 0, htfText, text_color=color.white, bgcolor=htfColor)
 
 // ---------- アラート ----------
-alertcondition(buySignal, title="買いシグナル発生", message="3分足: 買いシグナル発生 (EMAクロス+VWAP+RSI+出来高+上位足トレンド条件クリア)")
-alertcondition(sellSignal, title="売りシグナル発生", message="3分足: 売りシグナル発生 (EMAクロス+VWAP+RSI+出来高+上位足トレンド条件クリア)")
-alertcondition(reversalBuySignal, title="反発買いシグナル発生", message="3分足: ストキャスティクス反発買いシグナル発生(売られすぎ圏での交差)")
-alertcondition(reversalSellSignal, title="反発売りシグナル発生", message="3分足: ストキャスティクス反発売りシグナル発生(買われすぎ圏での交差)")
+alertcondition(showEmaCrossMode and buySignal, title="[EMA型]買いシグナル発生", message="3分足: 買いシグナル発生 (EMAクロス+VWAP+RSI+出来高+上位足トレンド条件クリア)")
+alertcondition(showEmaCrossMode and sellSignal, title="[EMA型]売りシグナル発生", message="3分足: 売りシグナル発生 (EMAクロス+VWAP+RSI+出来高+上位足トレンド条件クリア)")
+alertcondition(reversalBuyShowAligned, title="[反発型]買い(順張り)発生", message="3分足: 反発買い(トレンド一致・押し目買い候補)発生")
+alertcondition(reversalSellShowAligned, title="[反発型]売り(順張り)発生", message="3分足: 反発売り(トレンド一致・戻り売り候補)発生")
+alertcondition(reversalBuyShow, title="[反発型]買い(順張り+逆行)発生", message="3分足: 反発買いシグナル発生(順張り/逆行いずれか)")
+alertcondition(reversalSellShow, title="[反発型]売り(順張り+逆行)発生", message="3分足: 反発売りシグナル発生(順張り/逆行いずれか)")
 
 // ---------- 参考表示: 現在のRSI値をラベル的に確認したい場合はステータスラインで ----------
 plotchar(useRsiFilter ? rsiVal : na, "RSI値(デバッグ用/非表示推奨)", "", location.top, size=size.tiny, color=color.new(color.gray, 100))
