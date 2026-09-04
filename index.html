@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1f6f54">
-<title>購入リスト - Osakanian</title>
+<meta name="theme-color" content="#173a5e">
+<title>日本株テクニカルスクリーナー</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -13,28 +13,90 @@
 <body>
 <div class="app">
   <header class="app-header">
-    <h1>購入リスト</h1>
+    <h1>日本株テクニカルスクリーナー</h1>
+    <p class="app-subtitle">
+      無料データ(Yahoo Finance非公式API)でテクニカル条件に合う銘柄を抽出します。
+      取得できない場合はCSV取込で補完してください。将来的に有料APIとの連携も検討予定です。
+    </p>
   </header>
 
-  <form id="add-form" class="add-form">
-    <input id="item-input" type="text" placeholder="買うものを入力" autocomplete="off" required>
-    <button type="submit">追加</button>
-  </form>
+  <section class="card">
+    <h2>1. ウォッチリスト</h2>
+    <form id="watchlist-form" class="watchlist-form">
+      <input id="code-input" type="text" placeholder="銘柄コード (例: 7203)" autocomplete="off" required>
+      <input id="name-input" type="text" placeholder="銘柄名（任意）" autocomplete="off">
+      <button type="submit">追加</button>
+    </form>
 
-  <section class="list-section">
-    <ul id="pending-list" class="item-list"></ul>
+    <ul id="watchlist" class="watchlist"></ul>
+    <p id="watchlist-empty" class="empty-message" hidden>銘柄コードを追加してください。</p>
 
-    <div id="bought-block" class="bought-block" hidden>
-      <button id="toggle-bought" type="button" class="bought-toggle">
-        購入済み (<span id="bought-count">0</span>) <span id="bought-arrow">▾</span>
-      </button>
-      <ul id="bought-list" class="item-list bought-list"></ul>
+    <details class="bulk-add">
+      <summary>日経225・TOPIXなど複数銘柄をまとめて登録</summary>
+      <p class="dialog-note">
+        日経平均プロフィールやJPX公式サイトなどで確認した銘柄コード一覧をコピーして貼り付けてください
+        （改行・カンマ・スペース区切り、「コード,銘柄名」形式にも対応）。
+        このアプリ自体には最新の構成銘柄リストは内蔵していません（自動取得できる正確な情報源が無いため）。
+      </p>
+      <textarea id="bulk-input" class="bulk-textarea" rows="4" placeholder="例:&#10;7203,トヨタ自動車&#10;6758,ソニーグループ&#10;9432 9433 9984"></textarea>
+      <div class="bulk-actions">
+        <button id="bulk-add-btn" type="button" class="ghost-btn">まとめて追加</button>
+        <button id="sample-add-btn" type="button" class="ghost-btn">動作確認用サンプル10銘柄を追加</button>
+      </div>
+    </details>
+
+    <div class="fetch-controls">
+      <button id="fetch-all-btn" type="button" class="primary-btn">全銘柄のデータを取得</button>
+      <span id="fetch-status" class="fetch-status"></span>
     </div>
   </section>
 
-  <p id="empty-message" class="empty-message" hidden>リストは空です。買うものを追加しましょう。</p>
+  <section class="card">
+    <h2>2. スクリーニング条件</h2>
+    <div id="conditions" class="conditions"></div>
+
+    <div class="mode-select">
+      <span>条件の組み合わせ:</span>
+      <label><input type="radio" name="mode" value="AND"> すべて満たす (AND)</label>
+      <label><input type="radio" name="mode" value="OR"> いずれか満たす (OR)</label>
+    </div>
+
+    <button id="run-screen-btn" type="button" class="primary-btn">スクリーニング実行</button>
+  </section>
+
+  <section class="card">
+    <h2>3. 結果</h2>
+    <div class="results-table-wrap">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>コード</th>
+            <th>銘柄名</th>
+            <th>現在値</th>
+            <th>該当条件</th>
+            <th>詳細</th>
+            <th>直近30日</th>
+          </tr>
+        </thead>
+        <tbody id="results"></tbody>
+      </table>
+    </div>
+    <p id="results-empty" class="empty-message">スクリーニングを実行すると、ここに結果が表示されます。</p>
+  </section>
 </div>
 
-<script src="app.js"></script>
+<dialog id="csv-dialog" class="csv-dialog">
+  <form id="csv-form" method="dialog">
+    <h3>CSV取込: <span id="csv-target-label"></span></h3>
+    <p class="dialog-note">Date列とClose(終値)列を含むCSVファイルを選択してください。Open/High/Low/Volumeは任意です。</p>
+    <input id="csv-file-input" type="file" accept=".csv,text/csv" required>
+    <div class="dialog-actions">
+      <button type="button" id="csv-cancel-btn" class="ghost-btn">キャンセル</button>
+      <button type="submit" class="primary-btn">取り込む</button>
+    </div>
+  </form>
+</dialog>
+
+<script type="module" src="js/app.js"></script>
 </body>
 </html>

@@ -1,8 +1,11 @@
-const CACHE_NAME = "osakanian-shopping-list-v1";
+const CACHE_NAME = "jp-stock-screener-v1";
 const ASSETS = [
   "./index.html",
   "./style.css",
-  "./app.js",
+  "./js/app.js",
+  "./js/dataProvider.js",
+  "./js/indicators.js",
+  "./js/screener.js",
   "./manifest.json",
   "./icon.svg",
 ];
@@ -25,6 +28,11 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+
+  const url = new URL(event.request.url);
+  // 株価APIやCORSプロキシへのリクエストは常にネットワークから取得する（キャッシュしない）
+  if (url.origin !== self.location.origin) return;
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;

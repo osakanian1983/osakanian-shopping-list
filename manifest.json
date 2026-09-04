@@ -1,12 +1,12 @@
 {
-  "name": "購入リスト - Osakanian",
-  "short_name": "購入リスト",
-  "description": "シンプルな買い物メモアプリ",
+  "name": "日本株テクニカルスクリーナー",
+  "short_name": "株スクリーナー",
+  "description": "テクニカル指標(移動平均クロス・RSI・MACD・ボリンジャーバンド)で日本株を絞り込むアプリ",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f5f6f4",
-  "theme_color": "#1f6f54",
+  "background_color": "#f3f5f7",
+  "theme_color": "#173a5e",
   "lang": "ja",
   "icons": [
     { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }

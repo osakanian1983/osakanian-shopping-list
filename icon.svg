@@ -1,9 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#1f6f54"/>
-  <path d="M150 210h212l-24 150a28 28 0 0 1-28 24H202a28 28 0 0 1-28-24l-24-150z"
-        fill="none" stroke="#ffffff" stroke-width="24" stroke-linejoin="round"/>
-  <path d="M196 210v-30a60 60 0 0 1 120 0v30" fill="none" stroke="#ffffff" stroke-width="24"
-        stroke-linecap="round"/>
-  <path d="M208 300l28 30 68-66" fill="none" stroke="#ffffff" stroke-width="24"
+  <rect width="512" height="512" rx="96" fill="#173a5e"/>
+  <path d="M120 360 v-90 M120 270 h24 M144 270 v-70" fill="none" stroke="#e0705a" stroke-width="20" stroke-linecap="round"/>
+  <path d="M226 360 v-140 M226 220 h24 M250 220 v-40" fill="none" stroke="#e0705a" stroke-width="20" stroke-linecap="round"/>
+  <path d="M332 360 v-190 M332 170 h24 M356 170 v-60" fill="none" stroke="#e0705a" stroke-width="20" stroke-linecap="round"/>
+  <path d="M100 360 h300" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+  <path d="M108 250 l86 -48 74 30 96 -78" fill="none" stroke="#ffffff" stroke-width="16"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M320 154 h44 v44" fill="none" stroke="#ffffff" stroke-width="16"
         stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
