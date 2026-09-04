@@ -1,0 +1,87 @@
+//@version=5
+indicator("3分足デイトレ 売買タイミング", shorttitle="3min Signal", overlay=true)
+
+// ========================================================
+// 3分足デイトレード用 売買タイミング表示インジケーター
+//
+// ロジック概要:
+//   1. EMA(短期)とEMA(長期)のゴールデンクロス/デッドクロスを起点に
+//      「買い候補 / 売り候補」を判定
+//   2. VWAPをトレンドフィルターとして使用
+//      (VWAPより上でのみ買いシグナル、下でのみ売りシグナルを採用)
+//   3. RSIで高値掴み・安値掴みを避けるフィルターをかける
+//   4. 出来高が直近平均を上回っているかを確認フィルターとして追加
+//   全ての条件が揃った足でのみ「確定シグナル」として矢印表示 + アラート発火
+// ========================================================
+
+// ---------- 入力パラメータ ----------
+grpEma = "移動平均線 (トレンド判定)"
+emaFastLen = input.int(9, "EMA 短期", minval=1, group=grpEma)
+emaSlowLen = input.int(21, "EMA 長期", minval=1, group=grpEma)
+
+grpVwap = "VWAPフィルター"
+useVwapFilter = input.bool(true, "VWAPを買い/売りのフィルターに使用する", group=grpVwap)
+
+grpRsi = "RSIフィルター"
+useRsiFilter = input.bool(true, "RSIフィルターを使用する", group=grpRsi)
+rsiLen = input.int(14, "RSI期間", minval=1, group=grpRsi)
+rsiOverbought = input.int(70, "RSI 買われすぎ水準(この上での新規買いは見送り)", minval=50, maxval=100, group=grpRsi)
+rsiOversold = input.int(30, "RSI 売られすぎ水準(この下での新規売りは見送り)", minval=0, maxval=50, group=grpRsi)
+
+grpVol = "出来高フィルター"
+useVolFilter = input.bool(true, "出来高フィルターを使用する", group=grpVol)
+volMaLen = input.int(20, "出来高平均期間", minval=1, group=grpVol)
+volMult = input.float(1.0, "出来高がこの倍率以上で採用", minval=0.1, step=0.1, group=grpVol)
+
+grpSession = "取引時間帯フィルター (任意)"
+useSessionFilter = input.bool(false, "取引時間帯を限定する", group=grpSession)
+sessionTime = input.session("0900-1130", "取引時間帯", group=grpSession)
+
+// ---------- 各種計算 ----------
+emaFast = ta.ema(close, emaFastLen)
+emaSlow = ta.ema(close, emaSlowLen)
+
+vwapVal = ta.vwap(hlc3)
+
+rsiVal = ta.rsi(close, rsiLen)
+
+volMa = ta.sma(volume, volMaLen)
+volOk = not useVolFilter or volume >= volMa * volMult
+
+inSession = not useSessionFilter or not na(time(timeframe.period, sessionTime))
+
+// EMAクロス(トレンド転換の起点)
+crossUp = ta.crossover(emaFast, emaSlow)
+crossDn = ta.crossunder(emaFast, emaSlow)
+
+// VWAPフィルター
+vwapOkBuy = not useVwapFilter or close > vwapVal
+vwapOkSell = not useVwapFilter or close < vwapVal
+
+// RSIフィルター(過熱してる時の新規エントリーを避ける)
+rsiOkBuy = not useRsiFilter or rsiVal < rsiOverbought
+rsiOkSell = not useRsiFilter or rsiVal > rsiOversold
+
+// ---------- 確定シグナル ----------
+buySignal = crossUp and vwapOkBuy and rsiOkBuy and volOk and inSession
+sellSignal = crossDn and vwapOkSell and rsiOkSell and volOk and inSession
+
+// ---------- 描画 ----------
+plot(emaFast, "EMA短期", color=color.new(color.orange, 0), linewidth=1)
+plot(emaSlow, "EMA長期", color=color.new(color.blue, 0), linewidth=1)
+plot(vwapVal, "VWAP", color=color.new(color.purple, 0), linewidth=2)
+
+plotshape(buySignal, title="買いシグナル", style=shape.triangleup, location=location.belowbar,
+     color=color.new(color.green, 0), size=size.small, text="買")
+plotshape(sellSignal, title="売りシグナル", style=shape.triangledown, location=location.abovebar,
+     color=color.new(color.red, 0), size=size.small, text="売")
+
+// トレンド背景色(VWAPに対する上下で軽く色分け)
+bgcolor(close > vwapVal ? color.new(color.green, 92) : color.new(color.red, 92), title="VWAPトレンド背景")
+
+// ---------- アラート ----------
+alertcondition(buySignal, title="買いシグナル発生", message="3分足: 買いシグナル発生 (EMAクロス+VWAP+RSI+出来高条件クリア)")
+alertcondition(sellSignal, title="売りシグナル発生", message="3分足: 売りシグナル発生 (EMAクロス+VWAP+RSI+出来高条件クリア)")
+
+// ---------- 参考表示: 現在のRSI値をラベル的に確認したい場合はステータスラインで ----------
+plotchar(useRsiFilter ? rsiVal : na, "RSI値(デバッグ用/非表示推奨)", "", location.top, size=size.tiny, color=color.new(color.gray, 100))
