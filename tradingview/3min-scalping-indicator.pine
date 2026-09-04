@@ -16,6 +16,12 @@ indicator("3分足デイトレ 売買タイミング", shorttitle="3min Signal",
 //   しきい値(既定3/4)以上ならEMAクロスの足で「確定シグナル」として矢印+アラート。
 //   しきい値未満でもEMAクロス自体は発生していれば「参考シグナル」として薄く表示可能
 //   (だましを減らすほどシグナル数は減るため、しきい値で好みに調整する)
+//
+//   6. 反発(リバーサル)シグナル: EMAクロスは底/天井を打ってから確定するため
+//      構造的に遅れる。ストキャスティクスが売られすぎ/買われすぎ圏で交差した
+//      時点をより早い反発の目安として、EMAクロス系とは別に「反発買/反発売」
+//      (ひし形)で表示する。上位足トレンドが追いつく前の早い転換を拾うための
+//      シグナルなので、既定では上位足フィルターの対象外にしている。
 // ========================================================
 
 // ---------- 入力パラメータ ----------
@@ -53,6 +59,17 @@ minFiltersRequired = input.int(3, "採用に必要な条件数(VWAP/RSI/出来�
      tooltip="4=全条件必須(だまし最少・機会損失大) / 0=EMAクロスのみで採用(機会損失最少・だまし多)。上でOFFにしたフィルターは自動的に条件クリア扱いになります。")
 showEarlySignal = input.bool(true, "参考シグナル(EMAクロスのみ・未確認)を薄く表示する", group=grpScore)
 
+grpRev = "反発(リバーサル)シグナル - EMAクロスより早いタイミング用"
+useReversalSignal = input.bool(true, "ストキャスティクスによる反発シグナルを表示する", group=grpRev,
+     tooltip="EMAクロスは底/天井を打ってから確定するため反応が遅れます。売られすぎ/買われすぎ圏でのストキャスティクスの交差を、より早い反発シグナルとして別途表示します。")
+stochKLen = input.int(14, "%K期間", minval=1, group=grpRev)
+stochDLen = input.int(3, "%D期間", minval=1, group=grpRev)
+stochSmooth = input.int(3, "%K平滑化", minval=1, group=grpRev)
+stochOversold = input.int(20, "売られすぎ水準", minval=1, maxval=50, group=grpRev)
+stochOverbought = input.int(80, "買われすぎ水準", minval=50, maxval=99, group=grpRev)
+reversalRequireHtf = input.bool(false, "反発シグナルにも上位足トレンド一致を要求する", group=grpRev,
+     tooltip="OFF推奨: 反発シグナルは上位足がまだ反応していない早い段階を狙うためのものです。")
+
 // ---------- 各種計算 ----------
 emaFast = ta.ema(close, emaFastLen)
 emaSlow = ta.ema(close, emaSlowLen)
@@ -80,6 +97,11 @@ htfTooLow = timeframe.in_seconds(htfTimeframe) <= timeframe.in_seconds(timeframe
 crossUp = ta.crossover(emaFast, emaSlow)
 crossDn = ta.crossunder(emaFast, emaSlow)
 
+// ストキャスティクス(反発シグナル用。EMAクロスより早く底/天井圏の転換を検知)
+stochRaw = ta.stoch(close, high, low, stochKLen)
+stochK = ta.sma(stochRaw, stochSmooth)
+stochD = ta.sma(stochK, stochDLen)
+
 // VWAPフィルター
 vwapOkBuy = not useVwapFilter or close > vwapVal
 vwapOkSell = not useVwapFilter or close < vwapVal
@@ -102,6 +124,13 @@ sellSignal = crossDn and inSession and sellScore >= minFiltersRequired
 earlyBuySignal = showEarlySignal and crossUp and inSession and not buySignal
 earlySellSignal = showEarlySignal and crossDn and inSession and not sellSignal
 
+// ---------- 反発シグナル(ストキャスティクスが売られすぎ/買われすぎ圏で交差) ----------
+// EMAクロスを待たないため、底/天井圏でのより早いタイミングを拾える
+reversalBuyRaw = ta.crossover(stochK, stochD) and stochD < stochOversold
+reversalSellRaw = ta.crossunder(stochK, stochD) and stochD > stochOverbought
+reversalBuySignal = useReversalSignal and reversalBuyRaw and volOk and inSession and (not reversalRequireHtf or htfOkBuy)
+reversalSellSignal = useReversalSignal and reversalSellRaw and volOk and inSession and (not reversalRequireHtf or htfOkSell)
+
 // ---------- 描画 ----------
 plot(emaFast, "EMA短期", color=color.new(color.orange, 0), linewidth=1)
 plot(emaSlow, "EMA長期", color=color.new(color.blue, 0), linewidth=1)
@@ -118,6 +147,12 @@ plotshape(earlyBuySignal, title="参考シグナル(買い候補)", style=shape.
 plotshape(earlySellSignal, title="参考シグナル(売り候補)", style=shape.triangledown, location=location.abovebar,
      color=color.new(color.red, 70), size=size.tiny)
 
+// 反発シグナル(ストキャスティクス。EMAクロスより早い底/天井圏のタイミング)
+plotshape(reversalBuySignal, title="反発買いシグナル", style=shape.diamond, location=location.belowbar,
+     color=color.new(color.aqua, 0), size=size.small, text="反発買")
+plotshape(reversalSellSignal, title="反発売りシグナル", style=shape.diamond, location=location.abovebar,
+     color=color.new(color.fuchsia, 0), size=size.small, text="反発売")
+
 // トレンド背景色(VWAPに対する上下で軽く色分け)
 bgcolor(close > vwapVal ? color.new(color.green, 92) : color.new(color.red, 92), title="VWAPトレンド背景")
 
@@ -131,6 +166,8 @@ if showHtfLabel and barstate.islast
 // ---------- アラート ----------
 alertcondition(buySignal, title="買いシグナル発生", message="3分足: 買いシグナル発生 (EMAクロス+VWAP+RSI+出来高+上位足トレンド条件クリア)")
 alertcondition(sellSignal, title="売りシグナル発生", message="3分足: 売りシグナル発生 (EMAクロス+VWAP+RSI+出来高+上位足トレンド条件クリア)")
+alertcondition(reversalBuySignal, title="反発買いシグナル発生", message="3分足: ストキャスティクス反発買いシグナル発生(売られすぎ圏での交差)")
+alertcondition(reversalSellSignal, title="反発売りシグナル発生", message="3分足: ストキャスティクス反発売りシグナル発生(買われすぎ圏での交差)")
 
 // ---------- 参考表示: 現在のRSI値をラベル的に確認したい場合はステータスラインで ----------
 plotchar(useRsiFilter ? rsiVal : na, "RSI値(デバッグ用/非表示推奨)", "", location.top, size=size.tiny, color=color.new(color.gray, 100))
