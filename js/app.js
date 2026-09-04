@@ -1,6 +1,6 @@
 import { fetchYahooChart, parseCSV } from "./dataProvider.js";
 import { CONDITIONS, analyze, evaluate, matchedLabels } from "./screener.js";
-import { NIKKEI_225, TOPIX_CORE30, TOPIX_ALL } from "./indices.js";
+import { NIKKEI_225 } from "./indices.js";
 
 const WATCHLIST_KEY = "jp-stock-screener.watchlist";
 const CACHE_KEY = "jp-stock-screener.priceCache";
@@ -46,8 +46,6 @@ const bulkInputEl = document.getElementById("bulk-input");
 const bulkAddBtn = document.getElementById("bulk-add-btn");
 const sampleAddBtn = document.getElementById("sample-add-btn");
 const nikkei225AddBtn = document.getElementById("nikkei225-add-btn");
-const topixCore30AddBtn = document.getElementById("topix-core30-add-btn");
-const topixAllAddBtn = document.getElementById("topix-all-add-btn");
 const csvDialogEl = document.getElementById("csv-dialog");
 const csvFormEl = document.getElementById("csv-form");
 const csvFileInputEl = document.getElementById("csv-file-input");
@@ -237,24 +235,13 @@ sampleAddBtn.addEventListener("click", () => {
   fetchStatusEl.textContent = `サンプル銘柄を${added}件追加しました。「全銘柄のデータを取得」で取得できます。`;
 });
 
-function addIndexList(label, entries) {
+nikkei225AddBtn.addEventListener("click", () => {
   if (watchlist.length > 0) {
-    const ok = confirm(`${label}の${entries.length}銘柄を追加します（既存の${watchlist.length}銘柄はそのまま残ります）。よろしいですか？`);
+    const ok = confirm(`日経225の225銘柄を追加します（既存の${watchlist.length}銘柄はそのまま残ります）。よろしいですか？`);
     if (!ok) return;
   }
-  const added = addStocksBulk(entries);
-  fetchStatusEl.textContent = `${label}から${added}銘柄を追加しました。「全銘柄のデータを取得」は${watchlist.length}件分の取得に時間がかかる場合があります。`;
-}
-
-nikkei225AddBtn.addEventListener("click", () => addIndexList("日経225", NIKKEI_225));
-topixCore30AddBtn.addEventListener("click", () => addIndexList("TOPIX Core30", TOPIX_CORE30));
-topixAllAddBtn.addEventListener("click", () => {
-  const ok = confirm(
-    `TOPIX全銘柄（約${TOPIX_ALL.length}銘柄）を追加します。全銘柄のデータ取得には無料APIのレート制限により数十分かかる場合があります。続けますか？`
-  );
-  if (!ok) return;
-  const added = addStocksBulk(TOPIX_ALL);
-  fetchStatusEl.textContent = `TOPIX全銘柄から${added}銘柄を追加しました。`;
+  const added = addStocksBulk(NIKKEI_225);
+  fetchStatusEl.textContent = `日経225から${added}銘柄を追加しました。「全銘柄のデータを取得」は225件分の取得に数分かかります。`;
 });
 
 // ---- データ取得 ----
