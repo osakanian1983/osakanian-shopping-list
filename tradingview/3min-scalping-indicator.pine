@@ -4,9 +4,15 @@ indicator("3分足デイトレ 売買タイミング", shorttitle="3min Signal",
 // ========================================================
 // 3分足デイトレード用 売買タイミング表示インジケーター
 //
-// 「シグナル方式(切り替え)」グループの signalMode で、表示方式を2つから選べる:
+// 「シグナル方式(切り替え)」グループの signalMode で、表示方式を3つから選べる:
 //
-//  A) 反発型(トレンド一致フィルター) [既定]
+//  C) 節目+ローソク足型 [既定]
+//     直近の高値/安値(ピボット)を「節目」としてサポート/レジスタンスの水平線を
+//     自動描画し、節目付近でローソク足の反転パターン(包み足・ピンバー/ハンマー・
+//     流れ星)が出た足だけをシグナルにする。移動平均線やオシレーターを起点にせず、
+//     節目とローソク足の形そのものを見て判断する、価格アクション主体の方式。
+//
+//  A) 反発型(トレンド一致フィルター)
 //     ストキャスティクス(%K/%D)が売られすぎ/買われすぎ圏で交差した時点を
 //     「反発シグナル」(ひし形)として表示する。EMAクロスを待たないため、
 //     底/天井圏でのより早いタイミングを拾える。
@@ -23,16 +29,26 @@ indicator("3分足デイトレ 売買タイミング", shorttitle="3min Signal",
 //     しきい値未満でもEMAクロス自体が発生していれば「参考シグナル」として
 //     薄く表示できる。EMAクロス起点のため反応がやや遅い。
 //
-//  どちらのモードでも計算自体は常に行われており、signalModeの選択で
+//  どのモードでも計算自体は常に行われており、signalModeの選択で
 //  表示/アラート対象を切り替えているだけなので、いつでも即座に比較できる。
 // ========================================================
 
 // ---------- 入力パラメータ ----------
 grpMode = "シグナル方式(切り替え)"
-signalMode = input.string("反発型(トレンド一致フィルター)", "表示するシグナル方式",
-     options=["反発型(トレンド一致フィルター)", "EMAクロス型(スコア制)"], group=grpMode,
-     tooltip="反発型: ストキャスティクスの反発をメインに使い、トレンド方向と一致するかどうかで濃淡を分ける方式。\nEMAクロス型: EMAクロス+スコア制をメインに使う従来方式。\nどちらが自分の相場観に合うか、切り替えて試してください。")
+signalMode = input.string("節目+ローソク足型(推奨)", "表示するシグナル方式",
+     options=["節目+ローソク足型(推奨)", "反発型(トレンド一致フィルター)", "EMAクロス型(スコア制)"], group=grpMode,
+     tooltip="節目+ローソク足型: 直近高値/安値の節目とローソク足の反転パターンで判断する方式(価格アクション重視)。\n反発型: ストキャスティクスの反発をメインに使い、トレンド方向と一致するかどうかで濃淡を分ける方式。\nEMAクロス型: EMAクロス+スコア制をメインに使う方式。\nどれが自分の相場観に合うか、切り替えて試してください。")
 hideCounterTrendReversal = input.bool(false, "反発型: トレンドに逆行するシグナルを非表示にする(OFFなら薄く表示)", group=grpMode)
+
+grpSr = "節目(サポート/レジスタンス)+ローソク足パターン"
+srPivotBars = input.int(5, "節目の確定に使う左右の本数(ピボット感度)", minval=1, group=grpSr,
+     tooltip="小さいほど細かい節目を多く拾う(だまし増)、大きいほど大きな節目だけを拾う(反応は遅れる)。")
+srMaxLevels = input.int(3, "保持する節目の本数(サポート/レジスタンスそれぞれ)", minval=1, maxval=10, group=grpSr)
+srProximityAtrMult = input.float(0.5, "節目と見なす近さ(ATRの倍率)", minval=0.1, step=0.1, group=grpSr)
+srUseEngulfing = input.bool(true, "包み足(エンゲルフィング)パターンを使う", group=grpSr)
+srUsePinbar = input.bool(true, "ピンバー/ハンマー・流れ星パターンを使う", group=grpSr)
+srPinbarWickRatio = input.float(0.6, "ピンバーの実体に対するヒゲの最低割合", minval=0.4, maxval=0.9, step=0.05, group=grpSr)
+showSrLines = input.bool(true, "節目のラインをチャートに表示する", group=grpSr)
 
 grpEma = "移動平均線 (トレンド判定)"
 emaFastLen = input.int(9, "EMA 短期", minval=1, group=grpEma)
@@ -103,6 +119,7 @@ htfOkSell = not useHtfFilter or htfDowntrend
 htfTooLow = timeframe.in_seconds(htfTimeframe) <= timeframe.in_seconds(timeframe.period)
 
 // シグナル方式の切り替え
+showSrMode = signalMode == "節目+ローソク足型(推奨)"
 showReversalMode = signalMode == "反発型(トレンド一致フィルター)"
 showEmaCrossMode = signalMode == "EMAクロス型(スコア制)"
 
@@ -114,6 +131,71 @@ crossDn = ta.crossunder(emaFast, emaSlow)
 stochRaw = ta.stoch(close, high, low, stochKLen)
 stochK = ta.sma(stochRaw, stochSmooth)
 stochD = ta.sma(stochK, stochDLen)
+
+// ---------- 節目(サポート/レジスタンス)の検出・管理 ----------
+// ピボットハイ/ローが確定した時点(srPivotBars本後)で節目として登録し、直近N本分だけ保持する
+srAtr = ta.atr(14)
+srBuffer = srAtr * srProximityAtrMult
+
+pivotHighPrice = ta.pivothigh(high, srPivotBars, srPivotBars)
+pivotLowPrice = ta.pivotlow(low, srPivotBars, srPivotBars)
+
+var array<float> resLevels = array.new_float(0)
+var array<line> resLines = array.new_line(0)
+var array<float> supLevels = array.new_float(0)
+var array<line> supLines = array.new_line(0)
+
+if not na(pivotHighPrice)
+    array.unshift(resLevels, pivotHighPrice)
+    if showSrMode and showSrLines
+        newLine = line.new(bar_index - srPivotBars, pivotHighPrice, bar_index, pivotHighPrice, extend=extend.right, color=color.new(color.red, 40), width=1, style=line.style_dashed)
+        array.unshift(resLines, newLine)
+    if array.size(resLevels) > srMaxLevels
+        array.pop(resLevels)
+        if array.size(resLines) > 0
+            line.delete(array.pop(resLines))
+
+if not na(pivotLowPrice)
+    array.unshift(supLevels, pivotLowPrice)
+    if showSrMode and showSrLines
+        newLine = line.new(bar_index - srPivotBars, pivotLowPrice, bar_index, pivotLowPrice, extend=extend.right, color=color.new(color.lime, 40), width=1, style=line.style_dashed)
+        array.unshift(supLines, newLine)
+    if array.size(supLevels) > srMaxLevels
+        array.pop(supLevels)
+        if array.size(supLines) > 0
+            line.delete(array.pop(supLines))
+
+// 現在の足が節目(サポート/レジスタンス)に接近しているか
+nearSupport = false
+for i = 0 to array.size(supLevels) - 1
+    lvl = array.get(supLevels, i)
+    if math.abs(low - lvl) <= srBuffer
+        nearSupport := true
+
+nearResistance = false
+for i = 0 to array.size(resLevels) - 1
+    lvl = array.get(resLevels, i)
+    if math.abs(high - lvl) <= srBuffer
+        nearResistance := true
+
+// ---------- ローソク足の反転パターン ----------
+srBodySize = math.abs(close - open)
+srUpperWick = high - math.max(close, open)
+srLowerWick = math.min(close, open) - low
+srRange = high - low
+
+srBullishEngulfing = srUseEngulfing and close[1] < open[1] and close > open and close >= open[1] and open <= close[1]
+srBearishEngulfing = srUseEngulfing and close[1] > open[1] and close < open and close <= open[1] and open >= close[1]
+
+srBullishPinbar = srUsePinbar and srRange > 0 and srLowerWick >= srRange * srPinbarWickRatio and srUpperWick <= srRange * 0.2
+srBearishPinbar = srUsePinbar and srRange > 0 and srUpperWick >= srRange * srPinbarWickRatio and srLowerWick <= srRange * 0.2
+
+srBullishPattern = srBullishEngulfing or srBullishPinbar
+srBearishPattern = srBearishEngulfing or srBearishPinbar
+
+// ---------- 節目+ローソク足シグナル ----------
+srBuySignal = showSrMode and nearSupport and srBullishPattern and volOk and inSession
+srSellSignal = showSrMode and nearResistance and srBearishPattern and volOk and inSession
 
 // VWAPフィルター
 vwapOkBuy = not useVwapFilter or close > vwapVal
@@ -162,6 +244,12 @@ plot(emaFast, "EMA短期", color=color.new(color.orange, 0), linewidth=1)
 plot(emaSlow, "EMA長期", color=color.new(color.blue, 0), linewidth=1)
 plot(vwapVal, "VWAP", color=color.new(color.purple, 0), linewidth=2)
 
+// 節目+ローソク足型モードのシグナル(このモードを選んでいる時のみ表示。srBuySignal/srSellSignal自体にモード条件を含む)
+plotshape(srBuySignal, title="[節目型]買いシグナル", style=shape.triangleup, location=location.belowbar,
+     color=color.new(color.green, 0), size=size.small, text="買(節目)")
+plotshape(srSellSignal, title="[節目型]売りシグナル", style=shape.triangledown, location=location.abovebar,
+     color=color.new(color.red, 0), size=size.small, text="売(節目)")
+
 // EMAクロス型モードのシグナル(このモードを選んでいる時のみ表示)
 plotshape(showEmaCrossMode and buySignal, title="[EMA型]買いシグナル", style=shape.triangleup, location=location.belowbar,
      color=color.new(color.green, 0), size=size.small, text="買")
@@ -197,6 +285,8 @@ if showHtfLabel and barstate.islast
     table.cell(htfTable, 0, 0, htfText, text_color=color.white, bgcolor=htfColor)
 
 // ---------- アラート ----------
+alertcondition(srBuySignal, title="[節目型]買いシグナル発生", message="3分足: 節目(サポート)付近で強気の反転ローソク足パターン発生")
+alertcondition(srSellSignal, title="[節目型]売りシグナル発生", message="3分足: 節目(レジスタンス)付近で弱気の反転ローソク足パターン発生")
 alertcondition(showEmaCrossMode and buySignal, title="[EMA型]買いシグナル発生", message="3分足: 買いシグナル発生 (EMAクロス+VWAP+RSI+出来高+上位足トレンド条件クリア)")
 alertcondition(showEmaCrossMode and sellSignal, title="[EMA型]売りシグナル発生", message="3分足: 売りシグナル発生 (EMAクロス+VWAP+RSI+出来高+上位足トレンド条件クリア)")
 alertcondition(reversalBuyShowAligned, title="[反発型]買い(順張り)発生", message="3分足: 反発買い(トレンド一致・押し目買い候補)発生")
