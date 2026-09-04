@@ -140,10 +140,10 @@ srBuffer = srAtr * srProximityAtrMult
 pivotHighPrice = ta.pivothigh(high, srPivotBars, srPivotBars)
 pivotLowPrice = ta.pivotlow(low, srPivotBars, srPivotBars)
 
-var array<float> resLevels = array.new_float(0)
-var array<line> resLines = array.new_line(0)
-var array<float> supLevels = array.new_float(0)
-var array<line> supLines = array.new_line(0)
+var resLevels = array.new_float(0)
+var resLines = array.new_line(0)
+var supLevels = array.new_float(0)
+var supLines = array.new_line(0)
 
 if not na(pivotHighPrice)
     array.unshift(resLevels, pivotHighPrice)
@@ -158,8 +158,8 @@ if not na(pivotHighPrice)
 if not na(pivotLowPrice)
     array.unshift(supLevels, pivotLowPrice)
     if showSrMode and showSrLines
-        newLine = line.new(bar_index - srPivotBars, pivotLowPrice, bar_index, pivotLowPrice, extend=extend.right, color=color.new(color.lime, 40), width=1, style=line.style_dashed)
-        array.unshift(supLines, newLine)
+        newSupLine = line.new(bar_index - srPivotBars, pivotLowPrice, bar_index, pivotLowPrice, extend=extend.right, color=color.new(color.lime, 40), width=1, style=line.style_dashed)
+        array.unshift(supLines, newSupLine)
     if array.size(supLevels) > srMaxLevels
         array.pop(supLevels)
         if array.size(supLines) > 0
@@ -173,9 +173,9 @@ for i = 0 to array.size(supLevels) - 1
         nearSupport := true
 
 nearResistance = false
-for i = 0 to array.size(resLevels) - 1
-    lvl = array.get(resLevels, i)
-    if math.abs(high - lvl) <= srBuffer
+for j = 0 to array.size(resLevels) - 1
+    resLvl = array.get(resLevels, j)
+    if math.abs(high - resLvl) <= srBuffer
         nearResistance := true
 
 // ---------- ローソク足の反転パターン ----------
