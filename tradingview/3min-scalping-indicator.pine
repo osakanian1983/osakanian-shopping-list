@@ -11,8 +11,11 @@ indicator("3分足デイトレ 売買タイミング", shorttitle="3min Signal",
 //      (VWAPより上でのみ買いシグナル、下でのみ売りシグナルを採用)
 //   3. RSIで高値掴み・安値掴みを避けるフィルターをかける
 //   4. 出来高が直近平均を上回っているかを確認フィルターとして追加
-//   5. 上位足(既定15分足)のEMAトレンド方向と逆行するシグナルは除外
-//   全ての条件が揃った足でのみ「確定シグナル」として矢印表示 + アラート発火
+//   5. 上位足(既定15分足)のEMAトレンド方向をスコアに加味
+//   2〜5はAND(全部必須)ではなく「4条件中いくつクリアしたか」のスコア制。
+//   しきい値(既定3/4)以上ならEMAクロスの足で「確定シグナル」として矢印+アラート。
+//   しきい値未満でもEMAクロス自体は発生していれば「参考シグナル」として薄く表示可能
+//   (だましを減らすほどシグナル数は減るため、しきい値で好みに調整する)
 // ========================================================
 
 // ---------- 入力パラメータ ----------
@@ -39,11 +42,16 @@ useSessionFilter = input.bool(false, "取引時間帯を限定する", group=grp
 sessionTime = input.session("0900-1130", "取引時間帯", group=grpSession)
 
 grpHtf = "上位足トレンドフィルター"
-useHtfFilter = input.bool(true, "上位足のトレンド方向と一致するシグナルのみ採用する", group=grpHtf)
+useHtfFilter = input.bool(true, "上位足のトレンド方向をスコアに含める", group=grpHtf)
 htfTimeframe = input.timeframe("15", "上位足の時間足", group=grpHtf)
 htfEmaFastLen = input.int(9, "上位足EMA短期", minval=1, group=grpHtf)
 htfEmaSlowLen = input.int(21, "上位足EMA長期", minval=1, group=grpHtf)
 showHtfLabel = input.bool(true, "上位足トレンドをチャート右上に表示する", group=grpHtf)
+
+grpScore = "シグナルの厳しさ (だまし vs 機会損失の調整)"
+minFiltersRequired = input.int(3, "採用に必要な条件数(VWAP/RSI/出来高/上位足のうち何個必要か)", minval=0, maxval=4, group=grpScore,
+     tooltip="4=全条件必須(だまし最少・機会損失大) / 0=EMAクロスのみで採用(機会損失最少・だまし多)。上でOFFにしたフィルターは自動的に条件クリア扱いになります。")
+showEarlySignal = input.bool(true, "参考シグナル(EMAクロスのみ・未確認)を薄く表示する", group=grpScore)
 
 // ---------- 各種計算 ----------
 emaFast = ta.ema(close, emaFastLen)
@@ -80,9 +88,19 @@ vwapOkSell = not useVwapFilter or close < vwapVal
 rsiOkBuy = not useRsiFilter or rsiVal < rsiOverbought
 rsiOkSell = not useRsiFilter or rsiVal > rsiOversold
 
-// ---------- 確定シグナル ----------
-buySignal = crossUp and vwapOkBuy and rsiOkBuy and volOk and inSession and htfOkBuy
-sellSignal = crossDn and vwapOkSell and rsiOkSell and volOk and inSession and htfOkSell
+// ---------- スコア集計 ----------
+// VWAP/RSI/出来高/上位足の4条件のうち、いくつクリアしているかを数える
+// (フィルターをOFFにした項目は自動的にクリア扱い=常にtrue)
+buyScore = (vwapOkBuy ? 1 : 0) + (rsiOkBuy ? 1 : 0) + (volOk ? 1 : 0) + (htfOkBuy ? 1 : 0)
+sellScore = (vwapOkSell ? 1 : 0) + (rsiOkSell ? 1 : 0) + (volOk ? 1 : 0) + (htfOkSell ? 1 : 0)
+
+// ---------- 確定シグナル(スコアがしきい値以上) ----------
+buySignal = crossUp and inSession and buyScore >= minFiltersRequired
+sellSignal = crossDn and inSession and sellScore >= minFiltersRequired
+
+// ---------- 参考シグナル(EMAクロスのみ・条件未確認。早いタイミングの目安) ----------
+earlyBuySignal = showEarlySignal and crossUp and inSession and not buySignal
+earlySellSignal = showEarlySignal and crossDn and inSession and not sellSignal
 
 // ---------- 描画 ----------
 plot(emaFast, "EMA短期", color=color.new(color.orange, 0), linewidth=1)
@@ -93,6 +111,12 @@ plotshape(buySignal, title="買いシグナル", style=shape.triangleup, locatio
      color=color.new(color.green, 0), size=size.small, text="買")
 plotshape(sellSignal, title="売りシグナル", style=shape.triangledown, location=location.abovebar,
      color=color.new(color.red, 0), size=size.small, text="売")
+
+// 参考シグナル(条件未確認だがEMAクロス自体は発生。だましを含むので薄い表示)
+plotshape(earlyBuySignal, title="参考シグナル(買い候補)", style=shape.triangleup, location=location.belowbar,
+     color=color.new(color.green, 70), size=size.tiny)
+plotshape(earlySellSignal, title="参考シグナル(売り候補)", style=shape.triangledown, location=location.abovebar,
+     color=color.new(color.red, 70), size=size.tiny)
 
 // トレンド背景色(VWAPに対する上下で軽く色分け)
 bgcolor(close > vwapVal ? color.new(color.green, 92) : color.new(color.red, 92), title="VWAPトレンド背景")
