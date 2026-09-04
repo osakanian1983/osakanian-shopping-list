@@ -11,6 +11,7 @@ indicator("3分足デイトレ 売買タイミング", shorttitle="3min Signal",
 //      (VWAPより上でのみ買いシグナル、下でのみ売りシグナルを採用)
 //   3. RSIで高値掴み・安値掴みを避けるフィルターをかける
 //   4. 出来高が直近平均を上回っているかを確認フィルターとして追加
+//   5. 上位足(既定15分足)のEMAトレンド方向と逆行するシグナルは除外
 //   全ての条件が揃った足でのみ「確定シグナル」として矢印表示 + アラート発火
 // ========================================================
 
@@ -37,6 +38,13 @@ grpSession = "取引時間帯フィルター (任意)"
 useSessionFilter = input.bool(false, "取引時間帯を限定する", group=grpSession)
 sessionTime = input.session("0900-1130", "取引時間帯", group=grpSession)
 
+grpHtf = "上位足トレンドフィルター"
+useHtfFilter = input.bool(true, "上位足のトレンド方向と一致するシグナルのみ採用する", group=grpHtf)
+htfTimeframe = input.timeframe("15", "上位足の時間足", group=grpHtf)
+htfEmaFastLen = input.int(9, "上位足EMA短期", minval=1, group=grpHtf)
+htfEmaSlowLen = input.int(21, "上位足EMA長期", minval=1, group=grpHtf)
+showHtfLabel = input.bool(true, "上位足トレンドをチャート右上に表示する", group=grpHtf)
+
 // ---------- 各種計算 ----------
 emaFast = ta.ema(close, emaFastLen)
 emaSlow = ta.ema(close, emaSlowLen)
@@ -49,6 +57,16 @@ volMa = ta.sma(volume, volMaLen)
 volOk = not useVolFilter or volume >= volMa * volMult
 
 inSession = not useSessionFilter or not na(time(timeframe.period, sessionTime))
+
+// 上位足のEMAトレンド(確定足ベース。lookahead_offで未来参照を防止)
+htfEmaFast = request.security(syminfo.tickerid, htfTimeframe, ta.ema(close, htfEmaFastLen), lookahead=barmerge.lookahead_off)
+htfEmaSlow = request.security(syminfo.tickerid, htfTimeframe, ta.ema(close, htfEmaSlowLen), lookahead=barmerge.lookahead_off)
+htfUptrend = htfEmaFast > htfEmaSlow
+htfDowntrend = htfEmaFast < htfEmaSlow
+htfOkBuy = not useHtfFilter or htfUptrend
+htfOkSell = not useHtfFilter or htfDowntrend
+// 選択した上位足が現在のチャート足以下になっていないかの簡易チェック
+htfTooLow = timeframe.in_seconds(htfTimeframe) <= timeframe.in_seconds(timeframe.period)
 
 // EMAクロス(トレンド転換の起点)
 crossUp = ta.crossover(emaFast, emaSlow)
@@ -63,8 +81,8 @@ rsiOkBuy = not useRsiFilter or rsiVal < rsiOverbought
 rsiOkSell = not useRsiFilter or rsiVal > rsiOversold
 
 // ---------- 確定シグナル ----------
-buySignal = crossUp and vwapOkBuy and rsiOkBuy and volOk and inSession
-sellSignal = crossDn and vwapOkSell and rsiOkSell and volOk and inSession
+buySignal = crossUp and vwapOkBuy and rsiOkBuy and volOk and inSession and htfOkBuy
+sellSignal = crossDn and vwapOkSell and rsiOkSell and volOk and inSession and htfOkSell
 
 // ---------- 描画 ----------
 plot(emaFast, "EMA短期", color=color.new(color.orange, 0), linewidth=1)
@@ -79,9 +97,16 @@ plotshape(sellSignal, title="売りシグナル", style=shape.triangledown, loca
 // トレンド背景色(VWAPに対する上下で軽く色分け)
 bgcolor(close > vwapVal ? color.new(color.green, 92) : color.new(color.red, 92), title="VWAPトレンド背景")
 
+// ---------- 上位足トレンド表示ラベル ----------
+var table htfTable = table.new(position.top_right, 1, 1)
+if showHtfLabel and barstate.islast
+    htfText = htfTooLow ? "上位足設定エラー\n(チャート足以下)" : useHtfFilter ? (htfUptrend ? "上位足(" + htfTimeframe + "分): 上昇" : htfDowntrend ? "上位足(" + htfTimeframe + "分): 下降" : "上位足(" + htfTimeframe + "分): 横ばい") : "上位足フィルター: OFF"
+    htfColor = htfTooLow ? color.red : htfUptrend ? color.new(color.green, 0) : htfDowntrend ? color.new(color.red, 0) : color.new(color.gray, 0)
+    table.cell(htfTable, 0, 0, htfText, text_color=color.white, bgcolor=htfColor)
+
 // ---------- アラート ----------
-alertcondition(buySignal, title="買いシグナル発生", message="3分足: 買いシグナル発生 (EMAクロス+VWAP+RSI+出来高条件クリア)")
-alertcondition(sellSignal, title="売りシグナル発生", message="3分足: 売りシグナル発生 (EMAクロス+VWAP+RSI+出来高条件クリア)")
+alertcondition(buySignal, title="買いシグナル発生", message="3分足: 買いシグナル発生 (EMAクロス+VWAP+RSI+出来高+上位足トレンド条件クリア)")
+alertcondition(sellSignal, title="売りシグナル発生", message="3分足: 売りシグナル発生 (EMAクロス+VWAP+RSI+出来高+上位足トレンド条件クリア)")
 
 // ---------- 参考表示: 現在のRSI値をラベル的に確認したい場合はステータスラインで ----------
 plotchar(useRsiFilter ? rsiVal : na, "RSI値(デバッグ用/非表示推奨)", "", location.top, size=size.tiny, color=color.new(color.gray, 100))
