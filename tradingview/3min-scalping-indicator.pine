@@ -22,6 +22,13 @@ indicator("3分足デイトレ 節目+ローソク足シグナル", shorttitle="
 // レンジ相場でも「ニセの切り上げ安値」を拾ってしまう。これを避けるため、
 // より長い期間のEMA(既定50本)に対する終値の位置を「背景トレンドフィルター」
 // として併用する(既定ON、チャートには表示しない/任意で薄く表示可能)。
+//
+// これだけフィルターを重ねても「当たるシグナルだけ」にはならない(価格アクション
+// の性質上、正しい形のセットアップでも普通に外れる)。そのため、シグナルの
+// 的中率を上げることを目指すのではなく、シグナル発生時に損切りライン(節目の
+// すぐ外側)と利確目標(次の節目、または既定でリスクの1.5倍)を同時に表示し、
+// 「当たったら何倍獲れて、外れたら節目のすぐ外側で小さく損切りする」という
+// トレードプランをセットで見せる方針にしている。
 // ========================================================
 
 grpSr = "節目(サポート/レジスタンス)"
@@ -47,6 +54,12 @@ useBroadTrendFilter = input.bool(true, "より長い期間のトレンド方向�
      tooltip="切り上げ安値/切り下げ高値の判定は直前のピボット1つとの比較なので、大きな下降トレンドの中の小さなレンジ相場でも「ニセの切り上げ」を拾ってしまうことがあります。もっと長い期間(既定EMA50)の方向も加味して、大きな流れに逆らうシグナルを避けます。")
 broadTrendLen = input.int(50, "背景トレンド判定の期間(EMA)", minval=5, group=grpTrend)
 showBroadTrendLine = input.bool(false, "背景トレンドのラインをチャートに薄く表示する(参考用)", group=grpTrend)
+
+grpRisk = "損切り/利確ライン(トレードプラン)"
+showTradePlan = input.bool(true, "シグナル発生時に損切り/利確ラインを表示する", group=grpRisk,
+     tooltip="狙いは「シグナルを当てる」ことではなく、当たった時に何倍獲れて外れた時に何を失うかを事前に見えるようにすることです。")
+rewardMultiple = input.float(1.5, "次の節目が使えない場合の利確目標(リスクの何倍か)", minval=0.5, step=0.1, group=grpRisk)
+planLineBars = input.int(20, "損切り/利確ラインを右に伸ばす本数", minval=5, group=grpRisk)
 
 // ---------- 節目(サポート/レジスタンス)の検出・管理 ----------
 // 直近1本ずつのシンプルな管理(配列は使わない)
@@ -122,6 +135,45 @@ plotshape(buySignal, title="買いシグナル", style=shape.triangleup, locatio
      color=color.new(color.green, 0), size=size.small, text="買")
 plotshape(sellSignal, title="売りシグナル", style=shape.triangledown, location=location.abovebar,
      color=color.new(color.red, 0), size=size.small, text="売")
+
+// ---------- 損切り/利確ライン(トレードプラン) ----------
+// 損切り: 買いなら節目(サポート)のすぐ下、売りなら節目(レジスタンス)のすぐ上(=節目が壊れたら撤退)
+// 利確目標: 買いなら次の直近レジスタンス、売りなら次の直近サポート(使えない場合はリスクの倍数)
+// 最新のシグナル1件分だけを表示し、新しいシグナルが出ると前のものと置き換わる
+var line slLineBuy = na
+var line tpLineBuy = na
+var label planLabelBuy = na
+var line slLineSell = na
+var line tpLineSell = na
+var label planLabelSell = na
+
+if buySignal and showTradePlan
+    stopLossBuy = supLevel - buffer
+    riskBuy = math.max(close - stopLossBuy, atrVal * 0.1)
+    targetBuy = (not na(resLevel) and resLevel > close) ? resLevel : close + riskBuy * rewardMultiple
+    rrBuy = (targetBuy - close) / riskBuy
+
+    line.delete(slLineBuy)
+    line.delete(tpLineBuy)
+    label.delete(planLabelBuy)
+    slLineBuy := line.new(bar_index, stopLossBuy, bar_index + planLineBars, stopLossBuy, color=color.new(color.red, 0), style=line.style_dotted, width=1)
+    tpLineBuy := line.new(bar_index, targetBuy, bar_index + planLineBars, targetBuy, color=color.new(color.blue, 0), style=line.style_dotted, width=1)
+    planLabelBuy := label.new(bar_index, close, "SL " + str.tostring(stopLossBuy, format.mintick) + "\nTP " + str.tostring(targetBuy, format.mintick) + "\nRR " + str.tostring(rrBuy, "#.##"),
+         yloc=yloc.belowbar, style=label.style_label_up, color=color.new(color.green, 85), textcolor=color.new(color.green, 0), size=size.small)
+
+if sellSignal and showTradePlan
+    stopLossSell = resLevel + buffer
+    riskSell = math.max(stopLossSell - close, atrVal * 0.1)
+    targetSell = (not na(supLevel) and supLevel < close) ? supLevel : close - riskSell * rewardMultiple
+    rrSell = (close - targetSell) / riskSell
+
+    line.delete(slLineSell)
+    line.delete(tpLineSell)
+    label.delete(planLabelSell)
+    slLineSell := line.new(bar_index, stopLossSell, bar_index + planLineBars, stopLossSell, color=color.new(color.red, 0), style=line.style_dotted, width=1)
+    tpLineSell := line.new(bar_index, targetSell, bar_index + planLineBars, targetSell, color=color.new(color.blue, 0), style=line.style_dotted, width=1)
+    planLabelSell := label.new(bar_index, close, "SL " + str.tostring(stopLossSell, format.mintick) + "\nTP " + str.tostring(targetSell, format.mintick) + "\nRR " + str.tostring(rrSell, "#.##"),
+         yloc=yloc.abovebar, style=label.style_label_down, color=color.new(color.red, 85), textcolor=color.new(color.red, 0), size=size.small)
 
 alertcondition(buySignal, title="買いシグナル発生", message="節目(サポート)付近で強気の反転ローソク足パターン発生")
 alertcondition(sellSignal, title="売りシグナル発生", message="節目(レジスタンス)付近で弱気の反転ローソク足パターン発生")
