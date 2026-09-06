@@ -14,9 +14,13 @@ indicator("3分足デイトレ ゼロ遅延レベルシグナル", shorttitle="3
 //   ・前日の高値/安値/終値      … 既に確定済み、いつでも使える
 //   ・VWAP                      … 元々リアルタイム
 //
-// シグナルも「今確定した1本の足」だけで判定する。次の足を待たない。
-//   ・反発: そのレベルにヒゲでタッチし、実体は反対側で終わった
-//   ・ブレイク: そのレベルを実体の強い足で突破した
+// シグナルは「今確定した1本の足」を候補として拾い、次の1本で継続したかだけ
+// 追加確認する(それ以上は待たない)。1本だけの判定だとヒゲの単発反応(ノイズ)
+// まで拾ってしまうため、最小限の確認を挟んでいる。
+//   ・反発: そのレベルにヒゲでタッチし、実体は反対側で終わった候補足の後、
+//     次の足がさらに同じ方向に閉じたら採用
+//   ・ブレイク: そのレベルを実体の強い足で突破した候補足の後、
+//     次の足がさらに同じ方向に閉じたら採用
 // ========================================================
 
 grpLevels = "参照レベル(確定待ちなし)"
@@ -92,17 +96,34 @@ bullBreak(level) =>
 bearBreak(level) =>
     useBreakSignals and not na(level) and ta.crossunder(close, level) and strongBear
 
-buySessionLowReject = supportReject(sessionLowLevel)
-buySessionHighBreak = bullBreak(sessionHighLevel)
-buyPrevLowReject = supportReject(prevLowLevel)
-buyPrevHighBreak = bullBreak(prevHighLevel)
-buyVwapReject = supportReject(vwapLevel)
+// ---------- 候補足の判定(まだ確定シグナルではない) ----------
+buySessionLowRejectCand = supportReject(sessionLowLevel)
+buySessionHighBreakCand = bullBreak(sessionHighLevel)
+buyPrevLowRejectCand = supportReject(prevLowLevel)
+buyPrevHighBreakCand = bullBreak(prevHighLevel)
+buyVwapRejectCand = supportReject(vwapLevel)
 
-sellSessionHighReject = resistanceReject(sessionHighLevel)
-sellSessionLowBreak = bearBreak(sessionLowLevel)
-sellPrevHighReject = resistanceReject(prevHighLevel)
-sellPrevLowBreak = bearBreak(prevLowLevel)
-sellVwapReject = resistanceReject(vwapLevel)
+sellSessionHighRejectCand = resistanceReject(sessionHighLevel)
+sellSessionLowBreakCand = bearBreak(sessionLowLevel)
+sellPrevHighRejectCand = resistanceReject(prevHighLevel)
+sellPrevLowBreakCand = bearBreak(prevLowLevel)
+sellVwapRejectCand = resistanceReject(vwapLevel)
+
+// ---------- 次の1本での継続確認(単発ヒゲのノイズを除外) ----------
+buyContinues = close > close[1]
+sellContinues = close < close[1]
+
+buySessionLowReject = buySessionLowRejectCand[1] and buyContinues
+buySessionHighBreak = buySessionHighBreakCand[1] and buyContinues
+buyPrevLowReject = buyPrevLowRejectCand[1] and buyContinues
+buyPrevHighBreak = buyPrevHighBreakCand[1] and buyContinues
+buyVwapReject = buyVwapRejectCand[1] and buyContinues
+
+sellSessionHighReject = sellSessionHighRejectCand[1] and sellContinues
+sellSessionLowBreak = sellSessionLowBreakCand[1] and sellContinues
+sellPrevHighReject = sellPrevHighRejectCand[1] and sellContinues
+sellPrevLowBreak = sellPrevLowBreakCand[1] and sellContinues
+sellVwapReject = sellVwapRejectCand[1] and sellContinues
 
 buySignal = volOk and (buySessionLowReject or buySessionHighBreak or buyPrevLowReject or buyPrevHighBreak or buyVwapReject)
 sellSignal = volOk and (sellSessionHighReject or sellSessionLowBreak or sellPrevHighReject or sellPrevLowBreak or sellVwapReject)
