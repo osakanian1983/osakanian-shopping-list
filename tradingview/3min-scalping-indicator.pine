@@ -12,6 +12,11 @@ indicator("3分足デイトレ 節目+ローソク足シグナル", shorttitle="
 // 直近の節目(サポート/レジスタンスそれぞれ1本ずつ)だけを保持するシンプルな
 // 構成にしている。ピボット確定には性質上ラグがある(左右の本数分)が、
 // パターン自体の検出はリアルタイム。
+//
+// 節目とパターンだけでは、まだ下降トレンドが続いている(安値を切り下げ続けて
+// いる)最中に買ってしまう「ナイフ落とし」を防げないため、直近のピボット安値/
+// 高値が1つ前のピボットに対して切り上げ/切り下げになっているかを見る
+// トレンド構造フィルターを併用する(既定ON)。
 // ========================================================
 
 grpSr = "節目(サポート/レジスタンス)"
@@ -30,6 +35,10 @@ useVolFilter = input.bool(true, "出来高フィルターを使用する", group
 volMaLen = input.int(20, "出来高平均期間", minval=1, group=grpVol)
 volMult = input.float(1.0, "出来高がこの倍率以上で採用", minval=0.1, step=0.1, group=grpVol)
 
+grpTrend = "トレンド構造フィルター"
+useStructureFilter = input.bool(true, "切り上げ安値/切り下げ高値のときだけシグナルを採用する", group=grpTrend,
+     tooltip="OFFにすると、まだ安値を切り下げている最中の買い(下降トレンドでナイフを掴む形)も拾うようになります。ONを推奨します。")
+
 // ---------- 節目(サポート/レジスタンス)の検出・管理 ----------
 // 直近1本ずつのシンプルな管理(配列は使わない)
 atrVal = ta.atr(14)
@@ -39,17 +48,21 @@ pivotHigh = ta.pivothigh(high, pivotBars, pivotBars)
 pivotLow = ta.pivotlow(low, pivotBars, pivotBars)
 
 var float resLevel = na
+var float prevResLevel = na
 var float supLevel = na
+var float prevSupLevel = na
 var line resLineObj = na
 var line supLineObj = na
 
 if not na(pivotHigh)
+    prevResLevel := resLevel
     resLevel := pivotHigh
     if showLines
         line.delete(resLineObj)
         resLineObj := line.new(bar_index - pivotBars, pivotHigh, bar_index, pivotHigh, extend=extend.right, color=color.new(color.red, 30), style=line.style_dashed, width=1)
 
 if not na(pivotLow)
+    prevSupLevel := supLevel
     supLevel := pivotLow
     if showLines
         line.delete(supLineObj)
@@ -57,6 +70,13 @@ if not na(pivotLow)
 
 nearSupport = not na(supLevel) and math.abs(low - supLevel) <= buffer
 nearResistance = not na(resLevel) and math.abs(high - resLevel) <= buffer
+
+// 切り上げ安値/切り下げ高値になっているか(=下降/上昇の勢いが弱まっているか)
+// これがないと、まだ安値を切り下げている最中の「ただの直近安値」で買ってしまう
+higherLow = not na(supLevel) and not na(prevSupLevel) and supLevel > prevSupLevel
+lowerHigh = not na(resLevel) and not na(prevResLevel) and resLevel < prevResLevel
+structureOkBuy = not useStructureFilter or higherLow
+structureOkSell = not useStructureFilter or lowerHigh
 
 // ---------- 出来高フィルター ----------
 volMa = ta.sma(volume, volMaLen)
@@ -78,8 +98,8 @@ bullishPattern = bullishEngulfing or bullishPinbar
 bearishPattern = bearishEngulfing or bearishPinbar
 
 // ---------- シグナル ----------
-buySignal = nearSupport and bullishPattern and volOk
-sellSignal = nearResistance and bearishPattern and volOk
+buySignal = nearSupport and bullishPattern and volOk and structureOkBuy
+sellSignal = nearResistance and bearishPattern and volOk and structureOkSell
 
 plotshape(buySignal, title="買いシグナル", style=shape.triangleup, location=location.belowbar,
      color=color.new(color.green, 0), size=size.small, text="買")
