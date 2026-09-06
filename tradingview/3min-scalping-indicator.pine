@@ -1,144 +1,133 @@
 //@version=5
-indicator("3分足デイトレ 節目+ローソク足シグナル", shorttitle="3min SR Signal", overlay=true)
+indicator("3分足デイトレ ゼロ遅延レベルシグナル", shorttitle="3min ZeroLag Signal", overlay=true)
 
 // ========================================================
-// 3分足デイトレード用 売買タイミング表示インジケーター(シンプル版)
+// 3分足デイトレード用 売買タイミング表示インジケーター(ゼロ遅延版)
 //
-// 直近の高値/安値(ピボット)を「節目」としてサポート/レジスタンスの水平線を
-// 自動描画し、節目付近でローソク足の反転パターン(包み足・ピンバー/ハンマー・
-// 流れ星)が出た足だけをシグナルにする。移動平均線やオシレーターは使わず、
-// 節目とローソク足の形そのものを見て判断する、価格アクション主体の方式。
+// これまでの版は全て「確定を待ってから判定する」設計だった
+// (ピボット確定に左右N本待つ、ローソク足パターンの完成を待つ等)。
+// これはデイトレの「今この瞬間の値動きで判断したい」という要求と
+// 根本的に矛盾する。
 //
-// 直近の節目(サポート/レジスタンスそれぞれ1本ずつ)だけを保持するシンプルな
-// 構成にしている。ピボット確定には性質上ラグがある(左右の本数分)が、
-// パターン自体の検出はリアルタイム。
+// 今回は「確定待ちが一切不要な情報」だけを使う。
+//   ・本日のセッション高値/安値 … 今の値でその場で決まる(待ち時間ゼロ)
+//   ・前日の高値/安値/終値      … 既に確定済み、いつでも使える
+//   ・VWAP                      … 元々リアルタイム
 //
-// 節目とパターンだけでは、まだ下降トレンドが続いている(安値を切り下げ続けて
-// いる)最中に買ってしまう「ナイフ落とし」を防げないため、直近のピボット安値/
-// 高値が1つ前のピボットに対して切り上げ/切り下げになっているかを見る
-// トレンド構造フィルターを併用する(既定ON)。
-//
-// ただし直前1個のピボットとの比較だけでは、大きな下降トレンドの中の小さな
-// レンジ相場でも「ニセの切り上げ安値」を拾ってしまう。これを避けるため、
-// より長い期間のEMA(既定50本)に対する終値の位置を「背景トレンドフィルター」
-// として併用する(既定ON、チャートには表示しない/任意で薄く表示可能)。
-//
-// これだけフィルターを重ねても「当たるシグナルだけ」にはならない(価格アクション
-// の性質上、正しい形のセットアップでも普通に外れる)。そのため、シグナルの
-// 的中率を上げることを目指すのではなく、シグナル発生時に損切りライン(節目の
-// すぐ外側)と利確目標(次の節目、または既定でリスクの1.5倍)を同時に表示し、
-// 「当たったら何倍獲れて、外れたら節目のすぐ外側で小さく損切りする」という
-// トレードプランをセットで見せる方針にしている。
+// シグナルも「今確定した1本の足」だけで判定する。次の足を待たない。
+//   ・反発: そのレベルにヒゲでタッチし、実体は反対側で終わった
+//   ・ブレイク: そのレベルを実体の強い足で突破した
 // ========================================================
 
-grpSr = "節目(サポート/レジスタンス)"
-pivotBars = input.int(5, "節目確定に使う左右の本数(ピボット感度)", minval=1, group=grpSr,
-     tooltip="小さいほど細かい節目を多く拾う(だまし増)、大きいほど大きな節目だけを拾う(反応は遅れる)。")
-proximityAtrMult = input.float(0.5, "節目と見なす近さ(ATRの倍率)", minval=0.1, step=0.1, group=grpSr)
-showLines = input.bool(true, "節目のラインをチャートに表示する", group=grpSr)
+grpLevels = "参照レベル(確定待ちなし)"
+useSessionLevels = input.bool(true, "本日の高値/安値を使う", group=grpLevels)
+usePrevDayLevels = input.bool(true, "前日の高値/安値を使う", group=grpLevels)
+useVwapLevel = input.bool(true, "VWAPを使う", group=grpLevels)
+showLevelLines = input.bool(true, "レベルをチャートに表示する", group=grpLevels)
 
-grpPattern = "ローソク足パターン"
-useEngulfing = input.bool(true, "包み足(エンゲルフィング)パターンを使う", group=grpPattern)
-usePinbar = input.bool(true, "ピンバー/ハンマー・流れ星パターンを使う", group=grpPattern)
-pinbarWickRatio = input.float(0.6, "ピンバーの実体に対するヒゲの最低割合", minval=0.4, maxval=0.9, step=0.05, group=grpPattern)
+grpSignal = "シグナル条件"
+useRejectSignals = input.bool(true, "節目での反発(タッチ&リバース)シグナルを使う", group=grpSignal)
+useBreakSignals = input.bool(true, "節目のブレイク(勢いで抜けた)シグナルを使う", group=grpSignal)
+minBodyRatio = input.float(0.5, "ブレイク採用に必要な実体の強さ(レンジに対する比率)", minval=0.1, maxval=0.95, step=0.05, group=grpSignal,
+     tooltip="ブレイク(勢いで抜けた)シグナルだけに適用。反発シグナルには適用されません。")
 
 grpVol = "出来高フィルター"
 useVolFilter = input.bool(true, "出来高フィルターを使用する", group=grpVol)
 volMaLen = input.int(20, "出来高平均期間", minval=1, group=grpVol)
 volMult = input.float(1.0, "出来高がこの倍率以上で採用", minval=0.1, step=0.1, group=grpVol)
 
-grpTrend = "トレンド構造フィルター"
-useStructureFilter = input.bool(true, "切り上げ安値/切り下げ高値のときだけシグナルを採用する", group=grpTrend,
-     tooltip="OFFにすると、まだ安値を切り下げている最中の買い(下降トレンドでナイフを掴む形)も拾うようになります。ONを推奨します。")
-useBroadTrendFilter = input.bool(true, "より長い期間のトレンド方向にも逆らわないシグナルだけ採用する", group=grpTrend,
-     tooltip="切り上げ安値/切り下げ高値の判定は直前のピボット1つとの比較なので、大きな下降トレンドの中の小さなレンジ相場でも「ニセの切り上げ」を拾ってしまうことがあります。もっと長い期間(既定EMA50)の方向も加味して、大きな流れに逆らうシグナルを避けます。")
-broadTrendLen = input.int(50, "背景トレンド判定の期間(EMA)", minval=5, group=grpTrend)
-showBroadTrendLine = input.bool(false, "背景トレンドのラインをチャートに薄く表示する(参考用)", group=grpTrend)
-
 grpRisk = "損切り/利確ライン(トレードプラン)"
 showTradePlan = input.bool(true, "シグナル発生時に損切り/利確ラインを表示する", group=grpRisk,
      tooltip="狙いは「シグナルを当てる」ことではなく、当たった時に何倍獲れて外れた時に何を失うかを事前に見えるようにすることです。")
-rewardMultiple = input.float(1.5, "次の節目が使えない場合の利確目標(リスクの何倍か)", minval=0.5, step=0.1, group=grpRisk)
+atrBufferMult = input.float(0.3, "損切りをレベルからどれだけ離すか(ATRの倍率)", minval=0.05, step=0.05, group=grpRisk)
+rewardMultiple = input.float(1.5, "次のレベルが使えない場合の利確目標(リスクの何倍か)", minval=0.5, step=0.1, group=grpRisk)
 planLineBars = input.int(20, "損切り/利確ラインを右に伸ばす本数", minval=5, group=grpRisk)
 
-// ---------- 節目(サポート/レジスタンス)の検出・管理 ----------
-// 直近1本ずつのシンプルな管理(配列は使わない)
+// ---------- 参照レベルの計算(すべて確定待ちゼロ) ----------
 atrVal = ta.atr(14)
-buffer = atrVal * proximityAtrMult
 
-pivotHigh = ta.pivothigh(high, pivotBars, pivotBars)
-pivotLow = ta.pivotlow(low, pivotBars, pivotBars)
-
-var float resLevel = na
-var float prevResLevel = na
-var float supLevel = na
-var float prevSupLevel = na
-var line resLineObj = na
-var line supLineObj = na
-
-if not na(pivotHigh)
-    prevResLevel := resLevel
-    resLevel := pivotHigh
-    if showLines
-        line.delete(resLineObj)
-        resLineObj := line.new(bar_index - pivotBars, pivotHigh, bar_index, pivotHigh, extend=extend.right, color=color.new(color.red, 30), style=line.style_dashed, width=1)
-
-if not na(pivotLow)
-    prevSupLevel := supLevel
-    supLevel := pivotLow
-    if showLines
-        line.delete(supLineObj)
-        supLineObj := line.new(bar_index - pivotBars, pivotLow, bar_index, pivotLow, extend=extend.right, color=color.new(color.lime, 30), style=line.style_dashed, width=1)
-
-nearSupport = not na(supLevel) and math.abs(low - supLevel) <= buffer
-nearResistance = not na(resLevel) and math.abs(high - resLevel) <= buffer
-
-// 切り上げ安値/切り下げ高値になっているか(=下降/上昇の勢いが弱まっているか)
-// これがないと、まだ安値を切り下げている最中の「ただの直近安値」で買ってしまう
-higherLow = not na(supLevel) and not na(prevSupLevel) and supLevel > prevSupLevel
-lowerHigh = not na(resLevel) and not na(prevResLevel) and resLevel < prevResLevel
-structureOkBuy = not useStructureFilter or higherLow
-structureOkSell = not useStructureFilter or lowerHigh
-
-// 背景トレンドフィルター(表には出さない/任意で薄く表示するだけの、より長い期間の方向感)
-// 局所的なピボット比較だけでは拾いきれない「大きな流れ」に逆らうシグナルを避ける
-broadTrendEma = ta.ema(close, broadTrendLen)
-broadTrendOkBuy = not useBroadTrendFilter or close > broadTrendEma
-broadTrendOkSell = not useBroadTrendFilter or close < broadTrendEma
-
-// ---------- 出来高フィルター ----------
 volMa = ta.sma(volume, volMaLen)
 volOk = not useVolFilter or volume >= volMa * volMult
 
-// ---------- ローソク足の反転パターン ----------
-bodySize = math.abs(close - open)
-upperWick = high - math.max(close, open)
-lowerWick = math.min(close, open) - low
-barRange = high - low
+// 本日のセッション高値/安値をリアルタイムに更新
+newDay = ta.change(time("D")) != 0
 
-bullishEngulfing = useEngulfing and close[1] < open[1] and close > open and close >= open[1] and open <= close[1]
-bearishEngulfing = useEngulfing and close[1] > open[1] and close < open and close <= open[1] and open >= close[1]
+var float dayHigh = na
+var float dayLow = na
+var float prevDayHigh = na
+var float prevDayLow = na
 
-bullishPinbar = usePinbar and barRange > 0 and lowerWick >= barRange * pinbarWickRatio and upperWick <= barRange * 0.2
-bearishPinbar = usePinbar and barRange > 0 and upperWick >= barRange * pinbarWickRatio and lowerWick <= barRange * 0.2
+if newDay or na(dayHigh)
+    prevDayHigh := dayHigh
+    prevDayLow := dayLow
+    dayHigh := high
+    dayLow := low
+else
+    dayHigh := math.max(dayHigh, high)
+    dayLow := math.min(dayLow, low)
 
-bullishPattern = bullishEngulfing or bullishPinbar
-bearishPattern = bearishEngulfing or bearishPinbar
+// [1]を使うのは、今の足自身が新高値/新安値を作った場合に
+// 「レベルにタッチした」判定が常に真になってしまう(トートロジー)のを防ぐため
+sessionHighLevel = useSessionLevels ? dayHigh[1] : na
+sessionLowLevel = useSessionLevels ? dayLow[1] : na
+prevHighLevel = usePrevDayLevels ? prevDayHigh : na
+prevLowLevel = usePrevDayLevels ? prevDayLow : na
+vwapVal = ta.vwap(hlc3)
+vwapLevel = useVwapLevel ? vwapVal : na
 
-// ---------- シグナル ----------
-buySignal = nearSupport and bullishPattern and volOk and structureOkBuy and broadTrendOkBuy
-sellSignal = nearResistance and bearishPattern and volOk and structureOkSell and broadTrendOkSell
+// ---------- シグナル判定(今確定した1本の足だけで判定) ----------
+bodyRatio = math.abs(close - open) / math.max(high - low, syminfo.mintick)
+strongBull = close > open and bodyRatio >= minBodyRatio
+strongBear = close < open and bodyRatio >= minBodyRatio
 
-plot(showBroadTrendLine ? broadTrendEma : na, "背景トレンドEMA", color=color.new(color.gray, 40), linewidth=1)
+supportReject(level) =>
+    useRejectSignals and not na(level) and low <= level and close > level and close > open
 
-plotshape(buySignal, title="買いシグナル", style=shape.triangleup, location=location.belowbar,
-     color=color.new(color.green, 0), size=size.small, text="買")
-plotshape(sellSignal, title="売りシグナル", style=shape.triangledown, location=location.abovebar,
-     color=color.new(color.red, 0), size=size.small, text="売")
+resistanceReject(level) =>
+    useRejectSignals and not na(level) and high >= level and close < level and close < open
+
+bullBreak(level) =>
+    useBreakSignals and not na(level) and ta.crossover(close, level) and strongBull
+
+bearBreak(level) =>
+    useBreakSignals and not na(level) and ta.crossunder(close, level) and strongBear
+
+buySessionLowReject = supportReject(sessionLowLevel)
+buySessionHighBreak = bullBreak(sessionHighLevel)
+buyPrevLowReject = supportReject(prevLowLevel)
+buyPrevHighBreak = bullBreak(prevHighLevel)
+buyVwapReject = supportReject(vwapLevel)
+
+sellSessionHighReject = resistanceReject(sessionHighLevel)
+sellSessionLowBreak = bearBreak(sessionLowLevel)
+sellPrevHighReject = resistanceReject(prevHighLevel)
+sellPrevLowBreak = bearBreak(prevLowLevel)
+sellVwapReject = resistanceReject(vwapLevel)
+
+buySignal = volOk and (buySessionLowReject or buySessionHighBreak or buyPrevLowReject or buyPrevHighBreak or buyVwapReject)
+sellSignal = volOk and (sellSessionHighReject or sellSessionLowBreak or sellPrevHighReject or sellPrevLowBreak or sellVwapReject)
+
+// ---------- 描画: 参照レベル ----------
+plot(showLevelLines and useSessionLevels ? sessionHighLevel : na, "本日高値", color=color.new(color.red, 20), style=plot.style_linebr, linewidth=1)
+plot(showLevelLines and useSessionLevels ? sessionLowLevel : na, "本日安値", color=color.new(color.lime, 20), style=plot.style_linebr, linewidth=1)
+plot(showLevelLines and usePrevDayLevels ? prevHighLevel : na, "前日高値", color=color.new(color.red, 50), style=plot.style_linebr, linewidth=1)
+plot(showLevelLines and usePrevDayLevels ? prevLowLevel : na, "前日安値", color=color.new(color.lime, 50), style=plot.style_linebr, linewidth=1)
+plot(showLevelLines and useVwapLevel ? vwapVal : na, "VWAP", color=color.new(color.purple, 0), linewidth=2)
+
+// ---------- 描画: シグナル ----------
+plotshape(buySessionLowReject or buyPrevLowReject or buyVwapReject, title="反発買い", style=shape.triangleup, location=location.belowbar,
+     color=color.new(color.green, 0), size=size.small, text="反発買")
+plotshape(buySessionHighBreak or buyPrevHighBreak, title="ブレイク買い", style=shape.arrowup, location=location.belowbar,
+     color=color.new(color.teal, 0), size=size.small, text="抜け買")
+plotshape(sellSessionHighReject or sellPrevHighReject or sellVwapReject, title="反発売り", style=shape.triangledown, location=location.abovebar,
+     color=color.new(color.red, 0), size=size.small, text="反発売")
+plotshape(sellSessionLowBreak or sellPrevLowBreak, title="ブレイク売り", style=shape.arrowdown, location=location.abovebar,
+     color=color.new(color.maroon, 0), size=size.small, text="抜け売")
 
 // ---------- 損切り/利確ライン(トレードプラン) ----------
-// 損切り: 買いなら節目(サポート)のすぐ下、売りなら節目(レジスタンス)のすぐ上(=節目が壊れたら撤退)
-// 利確目標: 買いなら次の直近レジスタンス、売りなら次の直近サポート(使えない場合はリスクの倍数)
+// 損切り: シグナルの根拠になったレベルのすぐ外側(=そのレベルが否定されたら撤退)
+// 利確目標: 反対側の直近レベル(本日高安→前日高安→VWAPの優先順で最初に見つかったもの)。
+//          使えるレベルがなければリスクの倍数を目安として表示
 // 最新のシグナル1件分だけを表示し、新しいシグナルが出ると前のものと置き換わる
 var line slLineBuy = na
 var line tpLineBuy = na
@@ -148,9 +137,10 @@ var line tpLineSell = na
 var label planLabelSell = na
 
 if buySignal and showTradePlan
-    stopLossBuy = supLevel - buffer
+    buyLevelUsed = buySessionLowReject ? sessionLowLevel : buySessionHighBreak ? sessionHighLevel : buyPrevLowReject ? prevLowLevel : buyPrevHighBreak ? prevHighLevel : vwapLevel
+    stopLossBuy = buyLevelUsed - atrVal * atrBufferMult
     riskBuy = math.max(close - stopLossBuy, atrVal * 0.1)
-    targetBuy = (not na(resLevel) and resLevel > close) ? resLevel : close + riskBuy * rewardMultiple
+    targetBuy = (not na(sessionHighLevel) and sessionHighLevel > close) ? sessionHighLevel : (not na(prevHighLevel) and prevHighLevel > close) ? prevHighLevel : (not na(vwapLevel) and vwapLevel > close) ? vwapLevel : close + riskBuy * rewardMultiple
     rrBuy = (targetBuy - close) / riskBuy
 
     line.delete(slLineBuy)
@@ -162,9 +152,10 @@ if buySignal and showTradePlan
          yloc=yloc.belowbar, style=label.style_label_up, color=color.new(color.green, 85), textcolor=color.new(color.green, 0), size=size.small)
 
 if sellSignal and showTradePlan
-    stopLossSell = resLevel + buffer
+    sellLevelUsed = sellSessionHighReject ? sessionHighLevel : sellSessionLowBreak ? sessionLowLevel : sellPrevHighReject ? prevHighLevel : sellPrevLowBreak ? prevLowLevel : vwapLevel
+    stopLossSell = sellLevelUsed + atrVal * atrBufferMult
     riskSell = math.max(stopLossSell - close, atrVal * 0.1)
-    targetSell = (not na(supLevel) and supLevel < close) ? supLevel : close - riskSell * rewardMultiple
+    targetSell = (not na(sessionLowLevel) and sessionLowLevel < close) ? sessionLowLevel : (not na(prevLowLevel) and prevLowLevel < close) ? prevLowLevel : (not na(vwapLevel) and vwapLevel < close) ? vwapLevel : close - riskSell * rewardMultiple
     rrSell = (close - targetSell) / riskSell
 
     line.delete(slLineSell)
@@ -175,5 +166,6 @@ if sellSignal and showTradePlan
     planLabelSell := label.new(bar_index, close, "SL " + str.tostring(stopLossSell, format.mintick) + "\nTP " + str.tostring(targetSell, format.mintick) + "\nRR " + str.tostring(rrSell, "#.##"),
          yloc=yloc.abovebar, style=label.style_label_down, color=color.new(color.red, 85), textcolor=color.new(color.red, 0), size=size.small)
 
-alertcondition(buySignal, title="買いシグナル発生", message="節目(サポート)付近で強気の反転ローソク足パターン発生")
-alertcondition(sellSignal, title="売りシグナル発生", message="節目(レジスタンス)付近で弱気の反転ローソク足パターン発生")
+// ---------- アラート ----------
+alertcondition(buySignal, title="買いシグナル発生", message="ゼロ遅延レベル: 買いシグナル発生(反発またはブレイク)")
+alertcondition(sellSignal, title="売りシグナル発生", message="ゼロ遅延レベル: 売りシグナル発生(反発またはブレイク)")
