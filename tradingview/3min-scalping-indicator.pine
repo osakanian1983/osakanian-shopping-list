@@ -17,6 +17,11 @@ indicator("3分足デイトレ 節目+ローソク足シグナル", shorttitle="
 // いる)最中に買ってしまう「ナイフ落とし」を防げないため、直近のピボット安値/
 // 高値が1つ前のピボットに対して切り上げ/切り下げになっているかを見る
 // トレンド構造フィルターを併用する(既定ON)。
+//
+// ただし直前1個のピボットとの比較だけでは、大きな下降トレンドの中の小さな
+// レンジ相場でも「ニセの切り上げ安値」を拾ってしまう。これを避けるため、
+// より長い期間のEMA(既定50本)に対する終値の位置を「背景トレンドフィルター」
+// として併用する(既定ON、チャートには表示しない/任意で薄く表示可能)。
 // ========================================================
 
 grpSr = "節目(サポート/レジスタンス)"
@@ -38,6 +43,10 @@ volMult = input.float(1.0, "出来高がこの倍率以上で採用", minval=0.1
 grpTrend = "トレンド構造フィルター"
 useStructureFilter = input.bool(true, "切り上げ安値/切り下げ高値のときだけシグナルを採用する", group=grpTrend,
      tooltip="OFFにすると、まだ安値を切り下げている最中の買い(下降トレンドでナイフを掴む形)も拾うようになります。ONを推奨します。")
+useBroadTrendFilter = input.bool(true, "より長い期間のトレンド方向にも逆らわないシグナルだけ採用する", group=grpTrend,
+     tooltip="切り上げ安値/切り下げ高値の判定は直前のピボット1つとの比較なので、大きな下降トレンドの中の小さなレンジ相場でも「ニセの切り上げ」を拾ってしまうことがあります。もっと長い期間(既定EMA50)の方向も加味して、大きな流れに逆らうシグナルを避けます。")
+broadTrendLen = input.int(50, "背景トレンド判定の期間(EMA)", minval=5, group=grpTrend)
+showBroadTrendLine = input.bool(false, "背景トレンドのラインをチャートに薄く表示する(参考用)", group=grpTrend)
 
 // ---------- 節目(サポート/レジスタンス)の検出・管理 ----------
 // 直近1本ずつのシンプルな管理(配列は使わない)
@@ -78,6 +87,12 @@ lowerHigh = not na(resLevel) and not na(prevResLevel) and resLevel < prevResLeve
 structureOkBuy = not useStructureFilter or higherLow
 structureOkSell = not useStructureFilter or lowerHigh
 
+// 背景トレンドフィルター(表には出さない/任意で薄く表示するだけの、より長い期間の方向感)
+// 局所的なピボット比較だけでは拾いきれない「大きな流れ」に逆らうシグナルを避ける
+broadTrendEma = ta.ema(close, broadTrendLen)
+broadTrendOkBuy = not useBroadTrendFilter or close > broadTrendEma
+broadTrendOkSell = not useBroadTrendFilter or close < broadTrendEma
+
 // ---------- 出来高フィルター ----------
 volMa = ta.sma(volume, volMaLen)
 volOk = not useVolFilter or volume >= volMa * volMult
@@ -98,8 +113,10 @@ bullishPattern = bullishEngulfing or bullishPinbar
 bearishPattern = bearishEngulfing or bearishPinbar
 
 // ---------- シグナル ----------
-buySignal = nearSupport and bullishPattern and volOk and structureOkBuy
-sellSignal = nearResistance and bearishPattern and volOk and structureOkSell
+buySignal = nearSupport and bullishPattern and volOk and structureOkBuy and broadTrendOkBuy
+sellSignal = nearResistance and bearishPattern and volOk and structureOkSell and broadTrendOkSell
+
+plot(showBroadTrendLine ? broadTrendEma : na, "背景トレンドEMA", color=color.new(color.gray, 40), linewidth=1)
 
 plotshape(buySignal, title="買いシグナル", style=shape.triangleup, location=location.belowbar,
      color=color.new(color.green, 0), size=size.small, text="買")
