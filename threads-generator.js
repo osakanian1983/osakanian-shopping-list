@@ -2,7 +2,7 @@ const GENRES = [
   {
     name: "美容・毛穴ケア",
     worry: "毛穴の開き",
-    product: "プチプラ美容液",
+    product: "THE ORDINARY美容液",
     price: "1500円",
     dailyEffort: "1日30秒",
     period: "1ヶ月",
@@ -10,11 +10,13 @@ const GENRES = [
     altHigh: "デパコスの3万円美容液",
     altBadState: "全然変わらないままずっと放置してる",
     effortHigh: "週1回の毛穴パックに30分かけて",
+    amazonName: "THE ORDINARY ナイアシンアミド10% + Z1 フェイスセラム",
+    amazonUrl: "https://www.amazon.co.jp/dp/B01MDTVZTZ",
   },
   {
     name: "ダイエット・二の腕",
     worry: "二の腕のたるみ",
-    product: "プチプラ加圧インナー",
+    product: "着圧二の腕シェイパー",
     price: "2000円",
     dailyEffort: "1日5分",
     period: "2週間",
@@ -22,11 +24,13 @@ const GENRES = [
     altHigh: "月1万円のパーソナルジム",
     altBadState: "通うのが続かず結局リバウンドしてる",
     effortHigh: "毎日筋トレメニューを1時間こなして",
+    amazonName: "二の腕スリム 二の腕シェイパー 着圧インナー",
+    amazonUrl: "https://www.amazon.co.jp/dp/B08H259LWN",
   },
   {
     name: "時短家電・食洗機",
     worry: "食後の洗い物",
-    product: "工事不要の据え置き食洗機",
+    product: "パナソニック食洗機",
     price: "3万円",
     dailyEffort: "1回3分",
     period: "1週間",
@@ -34,11 +38,13 @@ const GENRES = [
     altHigh: "高額な工事付きビルトイン食洗機",
     altBadState: "費用の高さで導入を諦めてる",
     effortHigh: "毎晩30分かけて手洗いして",
+    amazonName: "パナソニック 食器洗い乾燥機 NP-TSP1-W（工事不要・賃貸対応）",
+    amazonUrl: "https://www.amazon.co.jp/dp/B09G2L8C4Z",
   },
   {
     name: "収納・片付け",
     worry: "すぐ散らかる部屋",
-    product: "プチプラ仕切り収納ボックス",
+    product: "引き出し仕切り収納ボックス",
     price: "500円",
     dailyEffort: "1日1分",
     period: "3日",
@@ -46,11 +52,13 @@ const GENRES = [
     altHigh: "高級な造作収納家具",
     altBadState: "買っても結局ぐちゃぐちゃに戻ってる",
     effortHigh: "週末に2時間かけて整理整頓して",
+    amazonName: "引き出し仕切り収納ボックス 整理収納ケース 4点セット",
+    amazonUrl: "https://www.amazon.co.jp/dp/B09TL51386",
   },
   {
     name: "白髪ケア",
     worry: "生え際の白髪",
-    product: "プチプラのタッチアップカラー",
+    product: "サロンドプロ白髪かくし",
     price: "1200円",
     dailyEffort: "1回1分",
     period: "3日",
@@ -58,11 +66,13 @@ const GENRES = [
     altHigh: "1万円する美容院の白髪染め",
     altBadState: "予約と費用がネックで放置してる",
     effortHigh: "月1で美容院に2時間かけて通って",
+    amazonName: "サロンドプロ カラーワンタッチ 白髪かくしEX ダークブラウン",
+    amazonUrl: "https://www.amazon.co.jp/dp/B001F7BE1Q",
   },
   {
     name: "冷え性・着圧ソックス",
     worry: "夜の足の冷え",
-    product: "プチプラの着圧ソックス",
+    product: "メディキュット温活ソックス",
     price: "800円",
     dailyEffort: "寝る前5秒",
     period: "3日",
@@ -70,11 +80,13 @@ const GENRES = [
     altHigh: "1万円超えの遠赤外線グッズ",
     altBadState: "高いの買ったのに冷え全然改善しない",
     effortHigh: "毎晩脚マッサージに20分かけて",
+    amazonName: "メディキュット 足あったか温活ソックス",
+    amazonUrl: "https://www.amazon.co.jp/dp/B074FZNS9B",
   },
   {
     name: "離乳食・子育て",
     worry: "離乳食作りの手間",
-    product: "プチプラ離乳食キューブ",
+    product: "リッチェル冷凍ブロックトレー",
     price: "300円",
     dailyEffort: "レンジ30秒",
     period: "3日",
@@ -82,11 +94,13 @@ const GENRES = [
     altHigh: "月1万円の高級ベビーフード宅配",
     altBadState: "払っても品切れで結局困ってる",
     effortHigh: "毎日1時間かけて離乳食を手作りして",
+    amazonName: "リッチェル わけわけフリージング ブロックトレー",
+    amazonUrl: "https://www.amazon.co.jp/dp/B00811TF88",
   },
   {
     name: "肩こり・デスクワーク",
     worry: "慢性的な肩こり",
-    product: "プチプラのネックマッサージャー",
+    product: "アテックスくびレッチ",
     price: "3000円",
     dailyEffort: "1日10分",
     period: "3日",
@@ -94,11 +108,13 @@ const GENRES = [
     altHigh: "月1万円の整体通い",
     altBadState: "通っても数日で元通りになってる",
     effortHigh: "週末に整体へ1時間かけて通って",
+    amazonName: "アテックス ネックマッサージピロー くびレッチ AX-HJ186gr",
+    amazonUrl: "https://www.amazon.co.jp/dp/B0GVHRR8RB",
   },
   {
     name: "猫トイレ・ペット用品",
     worry: "猫トイレの掃除",
-    product: "プチプラの猫砂スコップと消臭剤セット",
+    product: "ライオン猫砂ニオイをとる砂",
     price: "1000円",
     dailyEffort: "1日30秒",
     period: "3日",
@@ -106,11 +122,13 @@ const GENRES = [
     altHigh: "5万円する自動猫トイレ",
     altBadState: "買ったのに詰まって結局手動で掃除してる",
     effortHigh: "毎日3回トイレ掃除に時間をかけて",
+    amazonName: "ライオン ニオイをとる砂 猫砂 5.5L×4袋",
+    amazonUrl: "https://www.amazon.co.jp/dp/B07YV55TNL",
   },
   {
     name: "家計管理・貯金",
     worry: "なかなか貯まらない貯金",
-    product: "プチプラの家計管理アプリ",
+    product: "家計簿Dr.Wallet",
     price: "月500円",
     dailyEffort: "1日1分",
     period: "1ヶ月",
@@ -118,6 +136,8 @@ const GENRES = [
     altHigh: "数万円かかるFP相談",
     altBadState: "お金払って結局続けられてない",
     effortHigh: "毎晩レシートを手入力して家計簿をつけて",
+    amazonName: "家計簿Dr.Wallet（レシート撮影で自動家計簿）",
+    amazonUrl: "https://www.amazon.co.jp/dp/B00J05J7M8",
   },
 ];
 
@@ -220,6 +240,7 @@ function formatRound(results) {
 }
 
 const genreLabelEl = document.getElementById("genre-label");
+const productInfoEl = document.getElementById("product-info");
 const outputEl = document.getElementById("output");
 const generateBtn = document.getElementById("generate-btn");
 const copyBtn = document.getElementById("copy-btn");
@@ -237,6 +258,16 @@ function render() {
   currentText = formatRound(results);
 
   genreLabelEl.textContent = `今日のジャンル：${genre.name}`;
+  productInfoEl.textContent = "";
+  const linkLabel = document.createElement("span");
+  linkLabel.textContent = "紹介商品：";
+  const link = document.createElement("a");
+  link.href = genre.amazonUrl;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.textContent = genre.amazonName;
+  productInfoEl.append(linkLabel, link);
+
   outputEl.textContent = currentText;
   charCountsEl.textContent = results
     .map((r) => `${r.pattern.key}: ${r.charCount}文字`)

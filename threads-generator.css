@@ -40,6 +40,24 @@
   font-size: 0.9rem;
 }
 
+.tg-product-info {
+  margin: 0.3rem 0 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.tg-product-info a {
+  color: var(--accent);
+}
+
+.tg-product-note {
+  margin: 0.3rem 0 0;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
 .tg-result-actions {
   display: flex;
   align-items: center;
