@@ -5,6 +5,9 @@ const ASSETS = [
   "./app.js",
   "./manifest.json",
   "./icon.svg",
+  "./threads-generator.html",
+  "./threads-generator.css",
+  "./threads-generator.js",
 ];
 
 self.addEventListener("install", (event) => {

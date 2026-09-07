@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f6f54">
+<title>Threadsバズ投稿ジェネレーター - Osakanian</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="threads-generator.css">
+</head>
+<body>
+<div class="app">
+  <header class="app-header">
+    <h1>Threadsバズ投稿ジェネレーター</h1>
+    <p class="tg-sub">悩み解決・商品紹介型の投稿を3パターン自動生成。ジャンルはボタンを押すたびに自動で切り替わります。</p>
+    <a class="tg-back" href="index.html">← 購入リストに戻る</a>
+  </header>
+
+  <section class="tg-controls">
+    <button id="generate-btn" type="button" class="tg-generate-btn">今日の投稿を生成する</button>
+    <p id="genre-label" class="tg-genre-label"></p>
+  </section>
+
+  <section class="tg-result">
+    <div class="tg-result-actions">
+      <button id="copy-btn" type="button" class="tg-copy-btn">全文コピー</button>
+      <span id="copy-status" class="tg-copy-status"></span>
+    </div>
+    <pre id="output" class="tg-output"></pre>
+    <p id="char-counts" class="tg-char-counts"></p>
+  </section>
+</div>
+
+<script src="threads-generator.js"></script>
+</body>
+</html>
