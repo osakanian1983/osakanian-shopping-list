@@ -40,8 +40,18 @@ body {
 
 .app-header h1 {
   font-size: 1.4rem;
-  margin: 0.5rem 0 1.25rem;
+  margin: 0.5rem 0 0.4rem;
 }
+
+.tools-link {
+  display: inline-block;
+  color: var(--accent);
+  font-size: 0.85rem;
+  text-decoration: none;
+  margin-bottom: 1rem;
+}
+
+.tools-link:hover { text-decoration: underline; }
 
 .add-form {
   display: flex;
