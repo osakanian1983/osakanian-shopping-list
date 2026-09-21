@@ -1,4 +1,4 @@
-const CACHE_NAME = "osakanian-shopping-list-v2";
+const CACHE_NAME = "osakanian-shopping-list-v3";
 const ASSETS = [
   "./index.html",
   "./style.css",
@@ -8,6 +8,9 @@ const ASSETS = [
   "./rakuten-room-generator.html",
   "./rakuten-room-generator.css",
   "./rakuten-room-generator.js",
+  "./post-generator.html",
+  "./post-generator.css",
+  "./post-generator.js",
 ];
 
 self.addEventListener("install", (event) => {
