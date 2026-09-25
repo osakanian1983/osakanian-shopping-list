@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f6f54">
+<title>Threads Buzz Post Generator (EN) - Osakanian</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="threads-generator.css">
+</head>
+<body>
+<div class="app">
+  <header class="app-header">
+    <h1>Threads Buzz Post Generator (EN)</h1>
+    <p class="tg-sub">Auto-generates 3 pain-point/product-pitch post variants. The genre rotates every time you hit the button.</p>
+    <a class="tg-back" href="index.html">← Back to shopping list</a>
+  </header>
+
+  <section class="tg-controls">
+    <button id="generate-btn" type="button" class="tg-generate-btn">Generate today's post</button>
+    <p id="genre-label" class="tg-genre-label"></p>
+    <p id="product-info" class="tg-product-info"></p>
+    <p class="tg-product-note">※ Prices and availability change — double-check on Amazon before posting.</p>
+  </section>
+
+  <section class="tg-result">
+    <div class="tg-result-actions">
+      <button id="copy-btn" type="button" class="tg-copy-btn">Copy full text</button>
+      <span id="copy-status" class="tg-copy-status"></span>
+    </div>
+    <pre id="output" class="tg-output"></pre>
+    <p id="char-counts" class="tg-char-counts"></p>
+  </section>
+</div>
+
+<script src="threads-generator-en.js"></script>
+</body>
+</html>

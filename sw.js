@@ -1,4 +1,4 @@
-const CACHE_NAME = "osakanian-shopping-list-v1";
+const CACHE_NAME = "osakanian-shopping-list-v2";
 const ASSETS = [
   "./index.html",
   "./style.css",
@@ -8,6 +8,8 @@ const ASSETS = [
   "./threads-generator.html",
   "./threads-generator.css",
   "./threads-generator.js",
+  "./threads-generator-en.html",
+  "./threads-generator-en.js",
 ];
 
 self.addEventListener("install", (event) => {
