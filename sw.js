@@ -1,4 +1,4 @@
-const CACHE_NAME = "osakanian-shopping-list-v3";
+const CACHE_NAME = "osakanian-shopping-list-v4";
 const ASSETS = [
   "./index.html",
   "./style.css",
@@ -8,6 +8,9 @@ const ASSETS = [
   "./rakuten-room-generator.html",
   "./rakuten-room-generator.css",
   "./rakuten-room-generator.js",
+  "./rakuten-travel-generator.html",
+  "./rakuten-travel-generator.css",
+  "./rakuten-travel-generator.js",
   "./post-generator.html",
   "./post-generator.css",
   "./post-generator.js",
