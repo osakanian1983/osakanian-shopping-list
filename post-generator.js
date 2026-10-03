@@ -137,7 +137,7 @@ const PLATFORMS = {
     genres: AMAZON_GENRES,
     lastScoreKey: "reaction",
     lastScoreLabel: "コメント誘発力",
-    hashtags: null,
+    hashtags: (g) => `#PR #Amazon #買ってよかったもの #購入品 #${g.name}`,
     patterns: [
       { key: "A", title: "パターンA｜価格ギャップ重視型", build: amazonBuildA,
         scoreRange: { hook: [17, 19], concrete: [18, 20], contrarian: [15, 18], empathy: [15, 18], reaction: [15, 18] },
