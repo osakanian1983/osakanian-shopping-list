@@ -41,6 +41,8 @@
 
 body[data-platform="amazon"] { --platform-accent: #ff9900; --platform-accent-contrast: #14161a; }
 body[data-platform="rakuten"] { --platform-accent: #bf0000; --platform-accent-contrast: #ffffff; }
+body[data-platform="amazon_en"] { --platform-accent: #146eb4; --platform-accent-contrast: #ffffff; }
+body[data-platform="travel"] { --platform-accent: #0057a8; --platform-accent-contrast: #ffffff; }
 
 .pg-controls {
   margin-bottom: 1.25rem;
