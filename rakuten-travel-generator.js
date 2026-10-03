@@ -204,7 +204,7 @@ const SCORE_LABELS = [
   ["clip", "クリップ誘発力"],
 ];
 
-const HASHTAGS = "#楽天トラベル #国内旅行 #旅行好き #旅好きさんと繋がりたい";
+const HASHTAGS = "#PR #楽天トラベル #国内旅行 #旅行好き #旅好きさんと繋がりたい";
 
 function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;

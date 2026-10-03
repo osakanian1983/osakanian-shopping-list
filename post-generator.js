@@ -158,7 +158,7 @@ const PLATFORMS = {
     genres: RAKUTEN_GENRES,
     lastScoreKey: "reaction",
     lastScoreLabel: "クリップ誘発力",
-    hashtags: (g) => `#楽天ROOM #楽天市場 #買ってよかったもの #購入品 #${g.tag}`,
+    hashtags: (g) => `#PR #楽天ROOM #楽天市場 #買ってよかったもの #購入品 #${g.tag}`,
     patterns: [
       { key: "A", title: "パターンA｜価格ギャップ重視型", build: rakutenBuildA,
         scoreRange: { hook: [17, 19], concrete: [18, 20], contrarian: [15, 18], empathy: [15, 18], reaction: [15, 18] },

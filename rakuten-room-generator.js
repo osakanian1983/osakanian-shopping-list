@@ -204,7 +204,7 @@ const SCORE_LABELS = [
   ["clip", "クリップ誘発力"],
 ];
 
-const HASHTAGS = "#楽天ROOM #楽天市場 #買ってよかったもの #購入品";
+const HASHTAGS = "#PR #楽天ROOM #楽天市場 #買ってよかったもの #購入品";
 
 function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
