@@ -199,6 +199,8 @@ const SCORE_LABELS = [
   ["comment", "Comment Bait"],
 ];
 
+const HASHTAGS = "#ad #Amazon #AmazonFinds";
+
 function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -229,15 +231,16 @@ function generateRound(genre) {
     const body = pattern.build(genre);
     const { scores, total } = scorePattern(pattern);
     const reason = pattern.reasons[randInt(0, pattern.reasons.length - 1)];
-    return { pattern, body, scores, total, reason, charCount: body.replace(/\n/g, " ").length };
+    const tags = `${HASHTAGS} #${genre.name.replace(/\s+/g, "")}`;
+    return { pattern, body, tags, scores, total, reason, charCount: body.replace(/\n/g, " ").length };
   });
 }
 
 function formatRound(results) {
   const divider = "━━━━━━━━━━━━━━━";
-  const blocks = results.map(({ pattern, body, scores, total }) => {
+  const blocks = results.map(({ pattern, body, tags, scores, total }) => {
     const scoreLines = SCORE_LABELS.map(([key, label]) => `・${label}: ${scores[key]}/20`).join("\n");
-    return `${divider}\n[${pattern.title}]\nEngagement score: ${total}%\n\n${body}\n\nScore breakdown:\n${scoreLines}`;
+    return `${divider}\n[${pattern.title}]\nEngagement score: ${total}%\n\n${body}\n\n${tags}\n\nScore breakdown:\n${scoreLines}`;
   });
   const winner = results.reduce((best, cur) => (cur.total > best.total ? cur : best), results[0]);
   const summary = `[Top Pick]\nBest-performing pattern: ${winner.pattern.key}\nWhy: ${winner.reason}`;

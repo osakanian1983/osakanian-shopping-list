@@ -194,6 +194,8 @@ const SCORE_LABELS = [
   ["comment", "コメント誘発力"],
 ];
 
+const HASHTAGS = "#PR #Amazon #買ってよかったもの #購入品";
+
 function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -224,15 +226,16 @@ function generateRound(genre) {
     const body = pattern.build(genre);
     const { scores, total } = scorePattern(pattern);
     const reason = pattern.reasons[randInt(0, pattern.reasons.length - 1)];
-    return { pattern, body, scores, total, reason, charCount: body.replace(/\n/g, "").length };
+    const tags = `${HASHTAGS} #${genre.name}`;
+    return { pattern, body, tags, scores, total, reason, charCount: body.replace(/\n/g, "").length };
   });
 }
 
 function formatRound(results) {
   const divider = "━━━━━━━━━━━━━━━";
-  const blocks = results.map(({ pattern, body, scores, total }) => {
+  const blocks = results.map(({ pattern, body, tags, scores, total }) => {
     const scoreLines = SCORE_LABELS.map(([key, label]) => `・${label}：${scores[key]}/20`).join("\n");
-    return `${divider}\n【${pattern.title}】\n伸びる確率：${total}％\n\n${body}\n\n採点内訳：\n${scoreLines}`;
+    return `${divider}\n【${pattern.title}】\n伸びる確率：${total}％\n\n${body}\n\n${tags}\n\n採点内訳：\n${scoreLines}`;
   });
   const winner = results.reduce((best, cur) => (cur.total > best.total ? cur : best), results[0]);
   const summary = `【総合おすすめ】\n最も伸びる確率が高いパターン：${winner.pattern.key}\n理由：${winner.reason}`;
