@@ -5,10 +5,10 @@ python3 make_okan2.py で out_okan2/ に 01.png〜16.png, main.png, tab.png, pre
 """
 import os
 import zipfile
-from PIL import Image, ImageDraw
+from PIL import Image
 from make_stickers import SUN
-from make_okan import (Scene, C, B, grid, paint, okan, slime, up, LADLE, BROOM, OKAN, OKAN_FACES,
-                       FRAMES, DUR, save_apng, HEART, HEART_S, SPARK, SPARK_S, SWEAT, NOTE, ZED, DUST, CUP)
+from make_okan import (Scene, C, B, grid, paint, okan, up, LADLE, OKAN, OKAN_FACES,
+                       FRAMES, DUR, save_apng, HEART_S, SPARK, SPARK_S, SWEAT, NOTE, ZED, DUST, CUP)
 
 OUT = os.path.join(os.path.dirname(__file__), "out_okan2")
 C.update({"r": (200, 40, 50), "d": (120, 80, 50), "e": (255, 240, 220), "l": (210, 235, 255)})

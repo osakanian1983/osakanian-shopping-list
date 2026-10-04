@@ -6,7 +6,7 @@ python3 make_duo.py で out_duo/ に 01.png〜16.png, main.png, tab.png, preview
 import os
 import zipfile
 from PIL import Image, ImageDraw
-from make_stickers import (C, CW, CH, FRAMES, DUR, SPARK, SPARK_S, HEART, HEART_S, ANGER, SWEAT, NOTE, ZED,
+from make_stickers import (C, CW, CH, FRAMES, DUR, SPARK, SPARK_S, HEART_S, ANGER, SWEAT, NOTE, ZED,
                            MOON, CUP, R_UP, R_UP2, L_UP2, cat, grid, draw_grid, item, text, save_apng, up)
 
 OUT = os.path.join(os.path.dirname(__file__), "out_duo")
