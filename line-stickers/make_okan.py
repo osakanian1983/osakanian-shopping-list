@@ -52,11 +52,15 @@ OKAN_FACES = {  # 5〜8行目を差し替え
     "wow":   [".XsKKsssKKsX.", ".XpKKsssKKpX.", ".XssssRssssX.", "..XssRRRssX.."],
     "doubt": [".XsXXsssXXsX.", ".XpKKsssKKpX.", ".XsssssssssX.", "..XsssRRssX.."],
 }
-SLIME = [
-    "....XXXXXX....",
-    "..XXggggggXX..",
-    ".XgWWgggggggX.",
-    ".XgWgggggggGX.",
+SLIME = [  # 先っぽが右に曲がったしずく型
+    "........XX....",
+    ".......XgX....",
+    "......XggX....",
+    ".....XgggX....",
+    "....XggggGX...",
+    "...XgWgggGGX..",
+    "..XgWWggggGGX.",
+    ".XgWgggggggGGX",
     "XggggggggggGGX",
     "XggggggggggGGX",
     "XgggggggggggGX",
@@ -64,6 +68,7 @@ SLIME = [
     "XGgggggggggGGX",
     ".XXXXXXXXXXXX.",
 ]
+FACE_DY = 4   # 顔パーツを下へずらす量
 SLIME_FACES = {
     "normal": {"K": [(4, 4), (4, 5), (9, 4), (9, 5), (5, 7), (6, 8), (7, 8), (8, 7)]},
     "happy":  {"K": [(3, 5), (4, 4), (5, 5), (8, 5), (9, 4), (10, 5), (5, 7), (6, 8), (7, 8), (8, 7)], "p": [(2, 6), (11, 6)]},
@@ -108,10 +113,10 @@ def okan(face="smile"):
 def slime(face="normal", squash=0):
     g = grid(SLIME)
     for k, ps in SLIME_FACES[face].items():
-        for p in ps:
-            g[p] = k
-    if squash:  # 上の行を間引いてぺしゃんこにする
-        g = {(x, y + squash if y < 1 else y): c for (x, y), c in g.items() if not (1 <= y < 1 + squash)}
+        for x, y in ps:
+            g[(x, y + FACE_DY)] = k
+    if squash:  # 胴の1行を抜いて少し縮める（大きくつぶすのは Scene.slime でマスを平たくする）
+        g = {(x, y - 1 if y > 10 else y): c for (x, y), c in g.items() if y != 10}
     return g
 
 
@@ -138,7 +143,11 @@ class Scene:
         paint(self.img, grid(rows), self.ox + cx * B, self.oy + cy * B, b)
 
     def slime(self, face="normal", x=100, hop=0, squash=0, bx=B, by=B):
-        paint(self.img, slime(face, squash), x, self.ground - 10 * by - hop, bx, by)
+        if squash >= 2:  # ぺしゃんこ: 横長・平たいマスで描く
+            bx, by, squash = B + 1, 2, 0
+        g = slime(face, squash)
+        h = max(y for _, y in g) + 1
+        paint(self.img, g, x, self.ground - h * by - hop, bx, by)
 
     def item(self, rows, x, y, b=2):
         paint(self.img, grid(rows), x, y, b)
@@ -370,7 +379,7 @@ def main():
         f = Image.new("RGBA", (120, 120), (0, 0, 0, 0))
         paint(f, okan("yell" if i % 2 else "angry"), 4, 116 - 63 - (i % 2))
         paint(f, grid(PAN_UP), 4 + 27, 116 - 63 - 21 + (i % 2), 3)
-        paint(f, slime("scared"), 76, 116 - 20 - [0, 4][i % 2], 2)
+        paint(f, slime("scared"), 76, 116 - 28 - [0, 4][i % 2], 2)
         main_fr.append(up(f))
     save_apng(main_fr, os.path.join(OUT, "main.png"))
     # タブ画像 96x74
