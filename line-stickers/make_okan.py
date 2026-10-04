@@ -50,6 +50,7 @@ OKAN_FACES = {  # 5〜8行目を差し替え
     "smile": [".XssKsssKssX.", ".XpKsKsKsKpX.", ".XsssRRRsssX.", "..XsssRsssX.."],
     "angry": [".XKKsssssKKX.", ".XpsKKsKKspX.", ".XsssRRRsssX.", "..XsssssssX.."],
     "wow":   [".XsKKsssKKsX.", ".XpKKsssKKpX.", ".XssssRssssX.", "..XssRRRssX.."],
+    "sleep": [".XsssssssssX.", ".XpKKsssKKpX.", ".XsssssssssX.", "..XsssRsssX.."],
     "doubt": [".XsXXsssXXsX.", ".XpKKsssKKpX.", ".XsssssssssX.", "..XsssRRssX.."],
 }
 SLIME = [  # 先っぽが右に曲がったしずく型
