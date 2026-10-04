@@ -13,6 +13,7 @@ const GENRES = [
     tag: "金沢旅行",
     rakutenName: "浅田屋",
     rakutenUrl: "https://travel.rakuten.co.jp/HOTEL/187370/187370.html",
+    enCaption: "A historic kaiseki ryokan in Kanazawa — a special pick for an anniversary trip.",
   },
   {
     name: "別府温泉の貸切風呂旅館",
@@ -28,6 +29,7 @@ const GENRES = [
     tag: "別府温泉",
     rakutenName: "別府温泉 新玉旅館",
     rakutenUrl: "https://travel.rakuten.co.jp/HOTEL/40679/40679.html",
+    enCaption: "A ryokan in Beppu with private hot-spring baths you can enjoy all to yourselves.",
   },
   {
     name: "尾道・しまなみのゲストハウス",
@@ -43,6 +45,7 @@ const GENRES = [
     tag: "しまなみ海道",
     rakutenName: "尾道しまなみゲストハウス",
     rakutenUrl: "https://travel.rakuten.co.jp/HOTEL/182704/182704.html",
+    enCaption: "A friendly guesthouse on the Shimanami Kaido in Onomichi, great for solo travelers.",
   },
   {
     name: "道後温泉の老舗旅館",
@@ -58,6 +61,7 @@ const GENRES = [
     tag: "道後温泉",
     rakutenName: "道後温泉 道後舘",
     rakutenUrl: "https://travel.rakuten.co.jp/HOTEL/10788/10788.html",
+    enCaption: "A historic ryokan at Japan's famous Dogo Onsen in Matsuyama.",
   },
   {
     name: "蔵王温泉のスキー宿",
@@ -73,6 +77,7 @@ const GENRES = [
     tag: "蔵王旅行",
     rakutenName: "蔵王温泉 ホテルラルジャン蔵王",
     rakutenUrl: "https://travel.rakuten.co.jp/HOTEL/13603/13603.html",
+    enCaption: "A ski lodge at Zao Onsen in Yamagata with a hot spring to warm up after skiing.",
   },
   {
     name: "松島のオーシャンビュー旅館",
@@ -88,6 +93,7 @@ const GENRES = [
     tag: "松島旅行",
     rakutenName: "松島温泉 松島一の坊",
     rakutenUrl: "https://travel.rakuten.co.jp/HOTEL/29234/29234.html",
+    enCaption: "An ocean-view ryokan overlooking the famous Matsushima Bay in Miyagi.",
   },
   {
     name: "白川郷の合掌造り一棟貸し",
@@ -103,6 +109,7 @@ const GENRES = [
     tag: "白川郷旅行",
     rakutenName: "合掌乃宿 孫右エ門",
     rakutenUrl: "https://travel.rakuten.co.jp/HOTEL/25839/25839.html",
+    enCaption: "A whole thatched-roof farmhouse rental in the UNESCO village of Shirakawa-go.",
   },
   {
     name: "指宿の砂むし温泉旅館",
@@ -118,6 +125,7 @@ const GENRES = [
     tag: "指宿旅行",
     rakutenName: "指宿温泉 指宿いわさきホテル",
     rakutenUrl: "https://travel.rakuten.co.jp/HOTEL/9226/9226.html",
+    enCaption: "A hotel in Ibusuki, Kagoshima, known for its unique natural sand-bath hot springs.",
   },
   {
     name: "小豆島のオーシャンビュー宿",
@@ -133,6 +141,7 @@ const GENRES = [
     tag: "小豆島旅行",
     rakutenName: "ベイリゾートホテル小豆島",
     rakutenUrl: "https://travel.rakuten.co.jp/HOTEL/44874/44874.html",
+    enCaption: "An ocean-view hotel on Shodoshima Island overlooking the Seto Inland Sea.",
   },
   {
     name: "札幌の高級ホテル",
@@ -148,6 +157,7 @@ const GENRES = [
     tag: "札幌出張",
     rakutenName: "JRタワーホテル日航札幌",
     rakutenUrl: "https://travel.rakuten.co.jp/HOTEL/76941/76941.html",
+    enCaption: "A hotel right above Sapporo Station with a relaxing top-floor bath.",
   },
 ];
 
@@ -241,11 +251,12 @@ function generateRound(genre) {
   });
 }
 
-function formatRound(results) {
+function formatRound(results, genre) {
   const divider = "━━━━━━━━━━━━━━━";
+  const enLine = genre.enCaption ? `🌐 ${genre.enCaption} (Ad)\n\n` : "";
   const blocks = results.map(({ pattern, body, tags, scores, total }) => {
     const scoreLines = SCORE_LABELS.map(([key, label]) => `・${label}：${scores[key]}/20`).join("\n");
-    return `${divider}\n【${pattern.title}】\n伸びる確率：${total}％\n\n${body}\n\n${tags}\n\n採点内訳：\n${scoreLines}`;
+    return `${divider}\n【${pattern.title}】\n伸びる確率：${total}％\n\n${body}\n\n${enLine}${tags}\n\n採点内訳：\n${scoreLines}`;
   });
   const winner = results.reduce((best, cur) => (cur.total > best.total ? cur : best), results[0]);
   const summary = `【総合おすすめ】\n最も伸びる確率が高いパターン：${winner.pattern.key}\n理由：${winner.reason}`;
@@ -268,7 +279,7 @@ function render() {
   lastGenreIndex = index;
 
   const results = generateRound(genre);
-  currentText = formatRound(results);
+  currentText = formatRound(results, genre);
 
   genreLabelEl.textContent = `今日のテーマ：${genre.name}`;
   productInfoEl.textContent = "";
