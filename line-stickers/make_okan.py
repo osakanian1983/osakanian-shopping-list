@@ -142,10 +142,14 @@ class Scene:
         """おかん基準の位置(マス)に小物を置く"""
         paint(self.img, grid(rows), self.ox + cx * B, self.oy + cy * B, b)
 
-    def slime(self, face="normal", x=100, hop=0, squash=0, bx=B, by=B):
+    def slime(self, face="normal", x=100, hop=0, squash=0, bx=B, by=B, extras=(), recolor=None):
         if squash >= 2:  # ぺしゃんこ: 横長・平たいマスで描く
             bx, by, squash = B + 1, 2, 0
         g = slime(face, squash)
+        if recolor:
+            g = {p: recolor.get(c, c) for p, c in g.items()}
+        for rows, ex, ey in extras:  # スライム基準の位置(マス)に小物を重ねる
+            g.update(grid(rows, ex, ey))
         h = max(y for _, y in g) + 1
         paint(self.img, g, x, self.ground - h * by - hop, bx, by)
 
