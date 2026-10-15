@@ -2,42 +2,52 @@ const AMAZON_GENRES = [
   { name: "舌クリーナー", worry: "朝の口臭・舌の白い汚れ", product: "舌クリーナー", price: "800円", dailyEffort: "朝10秒磨くだけ", period: "3日",
     resultGood: "口臭が気にならなくなって息がスッキリ", altHigh: "3000円のマウスウォッシュ", altBadState: "使っても数時間で口臭が戻ってる",
     effortHigh: "毎食後に念入りに歯磨きして",
+    scene: "久しぶりに泊まった友達の家の洗面所", reaction: "それ何って思わず二度見しちゃう",
     itemName: "KACHISUTA 舌ブラシ 舌クリーナー 口臭ケア", itemUrl: "https://www.amazon.co.jp/dp/B08PYJW6L6" },
   { name: "花粉ブロックスプレー", worry: "外出先での花粉の侵入", product: "花粉ブロックスプレー", price: "900円", dailyEffort: "出かける前にシュッとするだけ", period: "3日",
     resultGood: "マスクの中まで花粉が来なくなる", altHigh: "5000円の高性能空気清浄機", altBadState: "部屋は快適でも外出先でくしゃみが出る",
     effortHigh: "毎日帰宅後すぐ服をはたいて着替えて",
+    scene: "花粉シーズンの満員電車の中", reaction: "涼しい顔してる人に思わず二度見する",
     itemName: "アース製薬 アレルブロック 花粉ガードスプレー", itemUrl: "https://www.amazon.co.jp/dp/B0192QPWDC" },
   { name: "卓上加湿器", worry: "デスク周りの乾燥・喉のイガイガ", product: "卓上加湿器", price: "2000円", dailyEffort: "USBに挿しておくだけ", period: "3日",
     resultGood: "喉のイガイガが減って肌の乾燥も気にならなくなる", altHigh: "1万円の大型加湿器", altBadState: "置き場所に困って結局しまい込んでる",
     effortHigh: "毎日給水と掃除に手間をかけて",
+    scene: "在宅勤務中の自分のデスク横", reaction: "おしゃれな見た目につい二度見しちゃう",
     itemName: "卓上加湿器 小型 USB給電式 350ml", itemUrl: "https://www.amazon.co.jp/dp/B0CRJT4Q99" },
   { name: "布団圧縮袋", worry: "クローゼットの中の布団のかさばり", product: "布団圧縮袋", price: "1000円", dailyEffort: "掃除機で10分吸うだけ", period: "1回",
-    resultGood: "布団が3分の1にまとまって収納がスッキリする", altHigh: "月2000円のトランクルーム", altBadState: "借りても結局荷物が増え続けてる",
+    resultGood: "布団が3分の1にまとまって収納がスッキリする", altHigh: "2000円のトランクルーム", altBadState: "借りても結局荷物が増え続けてる",
     effortHigh: "季節ごとに布団を丸めて紐で縛って",
+    scene: "引っ越し作業を手伝った友達の部屋", reaction: "収納力の違いに思わず驚いちゃう",
     itemName: "石崎資材 ふとん圧縮袋 バルブ式 FSK-01B", itemUrl: "https://www.amazon.co.jp/dp/B00S0WGLQM" },
   { name: "毛穴吸引器", worry: "鼻の黒ずみ・角栓", product: "毛穴吸引器", price: "3000円", dailyEffort: "週2回3分当てるだけ", period: "1週間",
     resultGood: "鼻の黒ずみが目立たなくなって毛穴が引き締まる", altHigh: "1万円のエステの毛穴吸引コース", altBadState: "通うのが続かず結局黒ずみが戻ってる",
     effortHigh: "毎晩指で角栓を押し出そうとして",
+    scene: "美容院の順番待ちの待合室", reaction: "肌の綺麗さについ二度見しちゃう",
     itemName: "Panasonic EH-SC10-E 毛穴吸引スポットクリア", itemUrl: "https://www.amazon.co.jp/dp/B09HGNZWVV" },
   { name: "低反発枕", worry: "朝起きた時の首や肩の痛み", product: "低反発枕", price: "3000円", dailyEffort: "いつも通り寝るだけ", period: "3日",
     resultGood: "首や肩が軽くなって朝の目覚めがスッキリする", altHigh: "2万円のオーダーメイド枕", altBadState: "高いお金払ったのに結局合わずに戻してる",
     effortHigh: "毎晩バスタオルを畳んで高さを調整して",
+    scene: "出張先のビジネスホテルの部屋", reaction: "寝心地の良さについつい二度見する",
     itemName: "低反発枕 まくら 肩こり 首こり 安眠枕", itemUrl: "https://www.amazon.co.jp/dp/B0DFTBY98H" },
   { name: "非常食セット", worry: "災害時の食料備蓄不足", product: "非常食セット", price: "5000円", dailyEffort: "棚に置いておくだけ", period: "3日",
-    resultGood: "いざという時も5年間安心して備えられる", altHigh: "毎月買い足すローリングストック食品", altBadState: "賞味期限が切れて結局無駄にしてる",
+    resultGood: "いざという時も5年間安心して備えられる", altHigh: "毎月買い足す備蓄食品", altBadState: "賞味期限が切れて結局無駄にしてる",
     effortHigh: "毎月備蓄食品の賞味期限を確認して入れ替えて",
+    scene: "マンションの防災訓練の集合場所", reaction: "備えの良さに思わず感心しちゃう",
     itemName: "あんしん壱番 非常食セット 5年保存 13種類", itemUrl: "https://www.amazon.co.jp/dp/B0B765Z3YS" },
   { name: "換気扇フィルター", worry: "キッチンの換気扇の油汚れ", product: "換気扇フィルター", price: "1000円", dailyEffort: "貼り替えるだけ", period: "1回",
     resultGood: "油汚れがフィルターに溜まって本体がキレイなまま", altHigh: "8000円の換気扇業者", altBadState: "予約が面倒で結局油汚れを放置してる",
     effortHigh: "毎月換気扇を分解して油汚れをゴシゴシ洗って",
+    scene: "ホームパーティーで行った友達のキッチン", reaction: "換気扇の綺麗さに二度見する",
     itemName: "レンジフードフィルター 貼るだけ 不織布", itemUrl: "https://www.amazon.co.jp/dp/B0D6SGPCHW" },
   { name: "撥水スプレー", worry: "雨の日の靴や鞄の水シミ", product: "撥水スプレー", price: "1200円", dailyEffort: "お出かけ前にシュッとするだけ", period: "1回",
     resultGood: "雨の日も水を弾いて靴も鞄もシミにならない", altHigh: "1万円の防水加工ブランド靴", altBadState: "高いのに雨で色落ちしたりシミになってる",
     effortHigh: "濡れるたびに乾いたタオルで拭き取って",
+    scene: "土砂降りの日の駅のホーム", reaction: "靴の綺麗さに思わず二度見しちゃう",
     itemName: "3M スコッチガード 防水スプレー 170ml", itemUrl: "https://www.amazon.co.jp/dp/B06WW9LTR8" },
   { name: "フォームローラー", worry: "ふくらはぎのむくみ・脚の疲れ", product: "フォームローラー", price: "1500円", dailyEffort: "1日3分コロコロ転がすだけ", period: "1週間",
-    resultGood: "脚のむくみが軽くなって夕方も脚がスッキリ", altHigh: "月1万円のリンパマッサージ", altBadState: "通うのが続かず結局むくみが戻ってる",
+    resultGood: "脚のむくみが軽くなって夕方も脚がスッキリ", altHigh: "1万円のリンパマッサージ", altBadState: "通うのが続かず結局むくみが戻ってる",
     effortHigh: "毎晩お風呂上がりに手で30分脚を揉んで",
+    scene: "ジムの休憩スペース", reaction: "様になってる使い方につい二度見する",
     itemName: "マッサージローラー 筋膜リリース むくみ 脚痩せ", itemUrl: "https://www.amazon.co.jp/dp/B0F2B1SWXC" },
 ];
 
@@ -45,42 +55,52 @@ const RAKUTEN_GENRES = [
   { name: "舌クリーナー", worry: "朝の口臭・舌の白い汚れ", product: "舌クリーナー", price: "700円", dailyEffort: "朝10秒磨くだけ", period: "3日",
     resultGood: "口臭が気にならなくなって息がスッキリ", altHigh: "3000円のマウスウォッシュ", altBadState: "使っても数時間で口臭が戻ってる",
     effortHigh: "毎食後に念入りに歯磨きして", tag: "口臭ケア",
+    scene: "彼氏の家に泊まった次の日の洗面所", reaction: "それ何って思わず二度見しちゃう",
     itemName: "グリーンベル 舌クリーナー グッドデザイン受賞モデル", itemUrl: "https://item.rakuten.co.jp/green-bell/sitakuri-na-/" },
   { name: "花粉ブロックスプレー", worry: "外出先での花粉の侵入", product: "花粉ブロックスプレー", price: "900円", dailyEffort: "出かける前にシュッとするだけ", period: "3日",
     resultGood: "マスクの中まで花粉が来なくなる", altHigh: "5000円の高性能空気清浄機", altBadState: "部屋は快適でも外出先でくしゃみが出る",
     effortHigh: "毎日帰宅後すぐ服をはたいて着替えて", tag: "花粉対策",
+    scene: "花粉がピークの日の通勤バス", reaction: "涼しい顔してる人に二度見する",
     itemName: "アース製薬 アレルブロック 花粉ガードスプレー モイストヴェール", itemUrl: "https://item.rakuten.co.jp/tomods-ap/4901080576910/" },
   { name: "卓上加湿器", worry: "デスク周りの乾燥・喉のイガイガ", product: "卓上加湿器", price: "2200円", dailyEffort: "USBに挿しておくだけ", period: "3日",
     resultGood: "喉のイガイガが減って肌の乾燥も気にならなくなる", altHigh: "1万円の大型加湿器", altBadState: "置き場所に困って結局しまい込んでる",
     effortHigh: "毎日給水と掃除に手間をかけて", tag: "乾燥対策",
+    scene: "カフェの隣の席の作業スペース", reaction: "おしゃれな加湿器につい二度見する",
     itemName: "モイストリー USB卓上加湿器", itemUrl: "https://item.rakuten.co.jp/emblstore/4526858066198/" },
   { name: "布団圧縮袋", worry: "クローゼットの中の布団のかさばり", product: "布団圧縮袋", price: "900円", dailyEffort: "掃除機で10分吸うだけ", period: "1回",
     resultGood: "布団が3分の1にまとまって収納がスッキリする", altHigh: "月2000円のトランクルーム", altBadState: "借りても結局荷物が増え続けてる",
     effortHigh: "季節ごとに布団を丸めて紐で縛って", tag: "収納",
+    scene: "模様替えを手伝った実家の部屋", reaction: "収納力の違いに驚いちゃう",
     itemName: "リビングート 神ワザバルブ 布団圧縮袋L 2枚入り", itemUrl: "https://item.rakuten.co.jp/livingut/366714/" },
   { name: "毛穴吸引器", worry: "鼻の黒ずみ・角栓", product: "毛穴吸引器", price: "3480円", dailyEffort: "週2回3分当てるだけ", period: "1週間",
     resultGood: "鼻の黒ずみが目立たなくなって毛穴が引き締まる", altHigh: "1万円のエステの毛穴吸引コース", altBadState: "通うのが続かず結局黒ずみが戻ってる",
     effortHigh: "毎晩指で角栓を押し出そうとして", tag: "毛穴ケア",
+    scene: "女子会で行った友達の家の洗面所", reaction: "肌の綺麗さに思わず二度見しちゃう",
     itemName: "NIPLUX マルチスキンクリーナー 水流式毛穴吸引", itemUrl: "https://item.rakuten.co.jp/nissoplus/np-msc25/" },
   { name: "低反発枕", worry: "朝起きた時の首や肩の痛み", product: "低反発枕", price: "3500円", dailyEffort: "いつも通り寝るだけ", period: "3日",
     resultGood: "首や肩が軽くなって朝の目覚めがスッキリする", altHigh: "2万円のオーダーメイド枕", altBadState: "高いお金払ったのに結局合わずに戻してる",
     effortHigh: "毎晩バスタオルを畳んで高さを調整して", tag: "快眠グッズ",
+    scene: "久しぶりの旅行先の民泊の寝室", reaction: "寝心地の良さについ二度見する",
     itemName: "HOMFINE 低反発枕 4段階高さ調整", itemUrl: "https://item.rakuten.co.jp/homfine/hfj013-38/" },
   { name: "非常食セット", worry: "災害時の食料備蓄不足", product: "非常食セット", price: "4500円", dailyEffort: "棚に置いておくだけ", period: "3日",
     resultGood: "いざという時も5年間安心して備えられる", altHigh: "毎月買い足すローリングストック食品", altBadState: "賞味期限が切れて結局無駄にしてる",
     effortHigh: "毎月備蓄食品の賞味期限を確認して入れ替えて", tag: "防災グッズ",
+    scene: "毎年恒例の町内会の防災訓練会場", reaction: "備えの良さに思わず感心しちゃう",
     itemName: "防災・非常食の専門店らいぷら 7日間非常食セットB 5年保存", itemUrl: "https://item.rakuten.co.jp/lifestoreplus/ls13378/" },
   { name: "換気扇フィルター", worry: "キッチンの換気扇の油汚れ", product: "換気扇フィルター", price: "900円", dailyEffort: "貼り替えるだけ", period: "1回",
     resultGood: "油汚れがフィルターに溜まって本体がキレイなまま", altHigh: "8000円の換気扇業者", altBadState: "予約が面倒で結局油汚れを放置してる",
     effortHigh: "毎月換気扇を分解して油汚れをゴシゴシ洗って", tag: "掃除・時短家事",
+    scene: "友達の新築祝いに行ったキッチン", reaction: "換気扇の綺麗さに二度見する",
     itemName: "東洋アルミ フィルたん レンジフードフィルター 貼るだけ", itemUrl: "https://item.rakuten.co.jp/badasai/4901987227830/" },
   { name: "撥水スプレー", worry: "雨の日の靴や鞄の水シミ", product: "撥水スプレー", price: "800円", dailyEffort: "お出かけ前にシュッとするだけ", period: "1回",
     resultGood: "雨の日も水を弾いて靴も鞄もシミにならない", altHigh: "1万円の防水加工ブランド靴", altBadState: "高いのに雨で色落ちしたりシミになってる",
     effortHigh: "濡れるたびに乾いたタオルで拭き取って", tag: "梅雨対策",
+    scene: "本格的な梅雨の日のバス停", reaction: "靴の綺麗さに思わず二度見しちゃう",
     itemName: "コロンブス 防水スプレー アメダス420ml", itemUrl: "https://item.rakuten.co.jp/i-need-more-shoes/10009003/" },
   { name: "フォームローラー", worry: "ふくらはぎのむくみ・脚の疲れ", product: "フォームローラー", price: "2500円", dailyEffort: "1日3分コロコロ転がすだけ", period: "1週間",
     resultGood: "脚のむくみが軽くなって夕方も脚がスッキリ", altHigh: "月1万円のリンパマッサージ", altBadState: "通うのが続かず結局むくみが戻ってる",
     effortHigh: "毎晩お風呂上がりに手で30分脚を揉んで", tag: "むくみケア",
+    scene: "ヨガスタジオの更衣室", reaction: "様になってる使い方に二度見する",
     itemName: "AOBAX 筋膜リリースローラー むくみ脚やせ", itemUrl: "https://item.rakuten.co.jp/aobax/aobamasarora/" },
 ];
 
@@ -88,42 +108,52 @@ const AMAZON_EN_GENRES = [
   { name: "Aroma Diffuser", worry: "a room that feels dry with no scent", product: "scent diffuser", price: "$25", dailyEffort: "just add water and a few oil drops", period: "1 evening",
     resultGood: "the room feels fresh and smells great", altHigh: "$40 scented candle", altBadState: "still lighting candles that barely last",
     effortHigh: "burning through candles every week",
+    scene: "a friend's apartment", reaction: "ask where it's from",
     itemName: "InnoGear Essential Oil Diffuser", itemUrl: "https://www.amazon.com/InnoGear-Aromatherapy-Essential-Ultrasonic-Humidifier/dp/B00V9JP8EE" },
   { name: "Baby Gate", worry: "a crawling baby getting close to the stairs", product: "baby gate", price: "$35", dailyEffort: "just latch it shut behind you", period: "1 day",
     resultGood: "you relax knowing the stairs are blocked", altHigh: "$3,000 stair remodel", altBadState: "still hovering by the stairs",
     effortHigh: "watching the baby every second near the stairs",
+    scene: "a playdate at a friend's house", reaction: "want one immediately",
     itemName: "Cumbor Baby Gate for Stairs and Doorways", itemUrl: "https://www.amazon.com/Cumbor-29-7-40-6-Essential-Winner-Dog-Auto-Close/dp/B08CK8WPP4" },
   { name: "Cat Scratching Post", worry: "a couch getting shredded by your cat", product: "cat scratching post", price: "$30", dailyEffort: "just set it where your cat scratches", period: "1 week",
     resultGood: "your cat scratches the post instead", altHigh: "$600 new couch", altBadState: "still watching the couch get shredded",
     effortHigh: "yelling 'no' every time your cat scratches",
+    scene: "a friend's living room", reaction: "do a double-take at the untouched couch",
     itemName: "Amazon Basics Cat Scratching Post", itemUrl: "https://www.amazon.com/AmazonBasics-Premium-Cat-Scratching-Post/dp/B07G3SLKQ8" },
   { name: "Cuticle Oil Pen", worry: "dry, cracked cuticles that catch on everything", product: "cuticle oil pen", price: "$10", dailyEffort: "just twist and brush it on", period: "1 week",
     resultGood: "your cuticles stay soft all day", altHigh: "$40 manicure", altBadState: "still picking at dry, cracked skin",
     effortHigh: "slathering on hand cream every hour",
+    scene: "a coworker's desk", reaction: "ask to borrow it",
     itemName: "Bliss Kiss Cuticle Oil Pen", itemUrl: "https://www.amazon.com/Bliss-Kiss-Simply-Pure-Cuticle/dp/B00DYMYRX2" },
   { name: "Cooling Gel Mattress Pad", worry: "waking up sweaty every night", product: "cooling gel mattress pad", price: "$40", dailyEffort: "just lay it over your mattress", period: "1 night",
     resultGood: "you stay cool and sleep through the night", altHigh: "$2,000 mattress", altBadState: "still waking up drenched",
     effortHigh: "flipping your pillow every hour for a cool side",
+    scene: "a guest room at a friend's house", reaction: "sleep better than at home and ask why",
     itemName: "Amazon Basics Cooling Gel Mattress Topper", itemUrl: "https://www.amazon.com/AmazonBasics-Cooling-Gel-Infused-CertiPUR-US-Certified/dp/B07SMSYPFV" },
   { name: "Hands-Free Umbrella Holder", worry: "pushing a stroller with no hand for an umbrella", product: "stroller umbrella mount", price: "$15", dailyEffort: "just clamp it on the bar", period: "1 walk",
     resultGood: "you push with both hands, staying dry", altHigh: "$60 rain cover", altBadState: "still getting soaked",
     effortHigh: "juggling the umbrella and the stroller handle",
+    scene: "the sidewalk on a rainy school run", reaction: "stop and stare",
     itemName: "JIUKONG Hands-Free Umbrella Holder", itemUrl: "https://www.amazon.com/JIUKONG-Universal-Umbrella-Stroller-Hands-Free/dp/B0GZ6FW9ZJ" },
   { name: "Gel Nail Stickers", worry: "chipped polish days after a manicure", product: "set of gel nail stickers", price: "$12", dailyEffort: "just press one onto each nail", period: "1 manicure",
     resultGood: "your manicure stays glossy for weeks", altHigh: "$50 gel manicure", altBadState: "still touching up chips",
     effortHigh: "repainting chipped nails every few days",
+    scene: "a coffee shop", reaction: "ask where you got your manicure done",
     itemName: "DANNI and TONI Gel Nail Strips", itemUrl: "https://www.amazon.com/DANNI-TONI-Transparent-Ultra-Glossy-Long-Lasting/dp/B09QS3HS5G" },
   { name: "Stroller Organizer", worry: "digging through a diaper bag at every stop", product: "stroller organizer", price: "$20", dailyEffort: "just reach into a side pocket", period: "1 outing",
     resultGood: "everything is right at your fingertips", altHigh: "$70 diaper bag", altBadState: "still digging through the bag",
     effortHigh: "unpacking the whole diaper bag at every stop",
+    scene: "a crowded park", reaction: "notice how organized everything looks",
     itemName: "Momcozy Universal Stroller Organizer", itemUrl: "https://www.amazon.com/Universal-Stroller-Organizer-Insulated-Momcozy/dp/B07JMZYJVW" },
   { name: "Shower Chair", worry: "feeling unsteady standing in the shower", product: "shower chair", price: "$35", dailyEffort: "just sit down and shower as usual", period: "1 shower",
     resultGood: "you shower steady, zero wobbling", altHigh: "$3,000 remodel", altBadState: "still gripping the wall",
     effortHigh: "holding the grab bar the entire shower",
+    scene: "a relative's bathroom", reaction: "wonder why you don't have one",
     itemName: "Carex Compact Shower Stool", itemUrl: "https://www.amazon.com/Carex-Compact-Shower-Stool-Adjustable/dp/B004G7NPJQ" },
   { name: "Portable Air Mattress", worry: "not having a bed ready for sudden guests", product: "portable air mattress", price: "$45", dailyEffort: "just plug in the pump", period: "1 night",
     resultGood: "guests get a comfortable bed in minutes", altHigh: "$400 bed frame", altBadState: "still apologizing for the couch",
     effortHigh: "hauling out a spare mattress from storage",
+    scene: "a last-minute sleepover", reaction: "ask to borrow it next time",
     itemName: "Luxchoice Portable Air Mattress", itemUrl: "https://www.amazon.com/Luxchoice-Mattress-Rechargeable-Inflatable-Portable/dp/B0CSNBTGP3" },
 ];
 
@@ -180,6 +210,13 @@ const TRAVEL_GENRES = [
     enCaption: "A ryokan in Okuhida Onsen, Gifu, with four free private open-air baths, no reservation needed." },
 ];
 
+function amazonBuildScene(g) {
+  const l1 = `${g.scene}で${g.product}を使ってる人がいたら、${g.reaction}。`;
+  const rest = `だって、${g.price}なのに${g.dailyEffort}で${g.period}後には${g.resultGood}って🥹` +
+    `${g.scene}でまた見かけたら、絶対また二度見する自信ある。` +
+    `周りの反応まで変わるなら、試さない理由なくない？🥹`;
+  return `${l1}\n${rest}`;
+}
 function amazonBuildA(g) {
   const l1 = `${g.worry}に悩んでる人、${g.product}使った方がいいよ。`;
   const rest = `だって、${g.price}なのに${g.dailyEffort}で${g.period}後には${g.resultGood}って` +
@@ -202,6 +239,13 @@ function amazonBuildC(g) {
   return `${l1}\n${rest}`;
 }
 
+function rakutenBuildScene(g) {
+  const l1 = `${g.scene}で${g.product}を使ってる人がいたら、${g.reaction}。`;
+  const rest = `だって、${g.price}なのに${g.dailyEffort}で${g.period}後には${g.resultGood}って🕊️` +
+    `${g.scene}でまた見かけたら、絶対また二度見する自信ある。` +
+    `周りの反応まで変わるなら、試さない理由がなくない？🕊️`;
+  return `${l1}\n${rest}`;
+}
 function rakutenBuildA(g) {
   const l1 = `${g.worry}に悩んでる人、${g.product}が本当に買ってよかった。`;
   const rest = `だって、${g.price}なのに${g.dailyEffort}で${g.period}後には${g.resultGood}って` +
@@ -226,6 +270,13 @@ function rakutenBuildC(g) {
 
 function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
+function amazonEnBuildScene(g) {
+  const l1 = `If you saw someone using a ${g.product} at ${g.scene}, you'd ${g.reaction}.`;
+  const rest = `For just ${g.price}, ${g.dailyEffort} and after ${g.period} ${g.resultGood} 🤯 ` +
+    `Spot it again at ${g.scene} and you'd still do a double-take. ` +
+    `Why skip something that gets a reaction like that? 🤯`;
+  return `${l1}\n${rest}`;
+}
 function amazonEnBuildA(g) {
   const l1 = `If ${g.worry} sounds familiar, you need a ${g.product}.`;
   const rest = `For just ${g.price}, ${g.dailyEffort} and after ${g.period} ${g.resultGood} — ` +
@@ -282,12 +333,12 @@ const PLATFORMS = {
     lastScoreLabel: "コメント誘発力",
     hashtags: (g) => `#PR #Amazon #買ってよかったもの #購入品 #${g.name}`,
     patterns: [
-      { key: "A", title: "パターンA｜価格ギャップ重視型", build: amazonBuildA,
+      { key: "A", title: "パターンA｜シーン共感型", build: amazonBuildScene,
+        scoreRange: { hook: [18, 20], concrete: [16, 19], contrarian: [8, 12], empathy: [17, 19], reaction: [18, 20] },
+        reasons: ["具体的なシーンが目に浮かび保存されやすいため", "第三者のリアクションが好奇心を刺激するため"] },
+      { key: "B", title: "パターンB｜価格ギャップ重視型", build: amazonBuildA,
         scoreRange: { hook: [17, 19], concrete: [18, 20], contrarian: [15, 18], empathy: [15, 18], reaction: [15, 18] },
         reasons: ["価格差のインパクトで保存を誘発するため", "コスパ訴求が当事者に刺さりやすいため"] },
-      { key: "B", title: "パターンB｜時短・手軽さ重視型", build: amazonBuildB,
-        scoreRange: { hook: [15, 18], concrete: [16, 19], contrarian: [13, 16], empathy: [17, 19], reaction: [15, 18] },
-        reasons: ["時短の実感が刺さり共有されやすいため", "手軽さ訴求で忙しい層に刺さるため"] },
       { key: "C", title: "パターンC｜逆張り・共感重視型", build: amazonBuildC,
         scoreRange: { hook: [17, 19], concrete: [16, 19], contrarian: [18, 20], empathy: [17, 19], reaction: [16, 19] },
         reasons: ["高額勢を名指しし共感と反論を誘発するため", "逆張り視点でコメントを誘発しやすいため"] },
@@ -303,12 +354,12 @@ const PLATFORMS = {
     lastScoreLabel: "クリップ誘発力",
     hashtags: (g) => `#PR #楽天ROOM #楽天市場 #買ってよかったもの #購入品 #${g.tag}`,
     patterns: [
-      { key: "A", title: "パターンA｜価格ギャップ重視型", build: rakutenBuildA,
+      { key: "A", title: "パターンA｜シーン共感型", build: rakutenBuildScene,
+        scoreRange: { hook: [18, 20], concrete: [16, 19], contrarian: [8, 12], empathy: [17, 19], reaction: [18, 20] },
+        reasons: ["具体的なシーンが目に浮かび保存されやすいため", "第三者のリアクションが好奇心を刺激するため"] },
+      { key: "B", title: "パターンB｜価格ギャップ重視型", build: rakutenBuildA,
         scoreRange: { hook: [17, 19], concrete: [18, 20], contrarian: [15, 18], empathy: [15, 18], reaction: [15, 18] },
         reasons: ["価格差のインパクトでクリップを誘発するため", "コスパ訴求が当事者に刺さりやすいため"] },
-      { key: "B", title: "パターンB｜時短・手軽さ重視型", build: rakutenBuildB,
-        scoreRange: { hook: [15, 18], concrete: [16, 19], contrarian: [13, 16], empathy: [17, 19], reaction: [15, 18] },
-        reasons: ["時短の実感が刺さり保存されやすいため", "手軽さ訴求で忙しい層に刺さるため"] },
       { key: "C", title: "パターンC｜逆張り・共感重視型", build: rakutenBuildC,
         scoreRange: { hook: [17, 19], concrete: [16, 19], contrarian: [18, 20], empathy: [17, 19], reaction: [16, 19] },
         reasons: ["高額勢を名指しし共感と反論を誘発するため", "逆張り視点でコメントを誘発しやすいため"] },
@@ -328,12 +379,12 @@ const PLATFORMS = {
     charUnit: " chars",
     hashtags: (g) => `#ad #Amazon #AmazonFinds #${g.name.replace(/\s+/g, "")}`,
     patterns: [
-      { key: "A", title: "Pattern A｜Price-Gap Angle", build: amazonEnBuildA,
+      { key: "A", title: "Pattern A｜Scene Reaction Angle", build: amazonEnBuildScene,
+        scoreRange: { hook: [18, 20], concrete: [16, 19], contrarian: [8, 12], empathy: [17, 19], reaction: [18, 20] },
+        reasons: ["A vivid scene makes the post easy to picture and save", "A third-party reaction sparks curiosity without feeling salesy"] },
+      { key: "B", title: "Pattern B｜Price-Gap Angle", build: amazonEnBuildA,
         scoreRange: { hook: [17, 19], concrete: [18, 20], contrarian: [15, 18], empathy: [15, 18], reaction: [15, 18] },
         reasons: ["The price gap creates enough shock value to drive saves", "Cost-per-value framing lands hard with the target audience"] },
-      { key: "B", title: "Pattern B｜Time-Saving Angle", build: amazonEnBuildB,
-        scoreRange: { hook: [15, 18], concrete: [16, 19], contrarian: [13, 16], empathy: [17, 19], reaction: [15, 18] },
-        reasons: ["The time-saved payoff is highly shareable", "Convenience framing resonates with busy people"] },
       { key: "C", title: "Pattern C｜Contrarian Angle", build: amazonEnBuildC,
         scoreRange: { hook: [17, 19], concrete: [16, 19], contrarian: [18, 20], empathy: [17, 19], reaction: [16, 19] },
         reasons: ["Calling out big spenders sparks both agreement and pushback", "The contrarian angle is built to drive comments"] },

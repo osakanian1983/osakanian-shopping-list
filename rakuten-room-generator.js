@@ -180,8 +180,8 @@ const PATTERNS = [
     build(g) {
       const l1 = `${g.scene}で${g.product}を使ってる人がいたら、${g.reaction}。`;
       const rest =
-        `だって、${g.price}なのに${g.dailyEffort}で${g.period}後には${g.resultGood}んだから🕊️` +
-        `${g.scene}でまた見かけたら、絶対二度見する自信ある。` +
+        `だって、${g.price}なのに${g.dailyEffort}で${g.period}後には${g.resultGood}って🕊️` +
+        `${g.scene}でまた見かけたら、絶対また二度見する自信ある。` +
         `周りの反応まで変わるなら、試さない理由がなくない？🕊️`;
       return `${l1}\n${rest}`;
     },
