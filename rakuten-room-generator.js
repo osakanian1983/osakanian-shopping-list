@@ -11,6 +11,8 @@ const GENRES = [
     altBadState: "通っても数日で姿勢が元に戻る",
     effortHigh: "毎回予約を取ってジムに通って",
     tag: "ダイエット",
+    scene: "毎朝通ってるジムの更衣室",
+    reaction: "姿勢の良さについつい二度見しちゃう",
     rakutenName: "FERRY スタイルアップインナー 加圧シャツ",
     rakutenUrl: "https://item.rakuten.co.jp/ferry/aluh-al60/",
   },
@@ -26,6 +28,8 @@ const GENRES = [
     altBadState: "頼んでも結局レシートを渡し忘れる",
     effortHigh: "毎月レシートをまとめて送って",
     tag: "家計管理",
+    scene: "確定申告シーズンの経理デスク",
+    reaction: "手際の良さが気になって見ちゃう",
     rakutenName: "ScanSnap iX100 FI-IX100BW",
     rakutenUrl: "https://item.rakuten.co.jp/bungudo/7247425/",
   },
@@ -41,6 +45,8 @@ const GENRES = [
     altBadState: "施術直後だけで翌日にはまたこわばる",
     effortHigh: "毎回予約を取って整体に通って",
     tag: "肩こり対策",
+    scene: "在宅勤務中のオンライン会議",
+    reaction: "それ何って聞きたくなる",
     rakutenName: "電熱マフラー ネックウォーマー USB給電式",
     rakutenUrl: "https://item.rakuten.co.jp/meisei/1213/",
   },
@@ -56,6 +62,8 @@ const GENRES = [
     altBadState: "リフォームしても荷物がすぐ溢れる",
     effortHigh: "工事の予約を取って数日待って",
     tag: "収納",
+    scene: "引っ越し祝いで行った友達の家",
+    reaction: "収納力の違いに驚いちゃう",
     rakutenName: "アイリスオーヤマ スタイル伸縮棒 SSB-280",
     rakutenUrl: "https://item.rakuten.co.jp/irisplaza-r/529258/",
   },
@@ -71,6 +79,8 @@ const GENRES = [
     altBadState: "セットしてもらっても翌日には崩れる",
     effortHigh: "毎回予約を取って美容室に通って",
     tag: "ヘアケア",
+    scene: "出張先のホテルの洗面所",
+    reaction: "手際の良さについ二度見しちゃう",
     rakutenName: "ALILIY ヘアアイロン コードレス",
     rakutenUrl: "https://item.rakuten.co.jp/yangzi81/lt-2231h/",
   },
@@ -86,6 +96,8 @@ const GENRES = [
     altBadState: "施術直後だけで抱っこするとまた痛む",
     effortHigh: "毎回予約を取って整体に通って",
     tag: "育児",
+    scene: "よく行く近所の公園のベンチ",
+    reaction: "軽そうな抱っこ紐が絶対気になる",
     rakutenName: "AKOAKOスリングS わずか100g",
     rakutenUrl: "https://item.rakuten.co.jp/akoakostudio/bw/",
   },
@@ -101,6 +113,8 @@ const GENRES = [
     altBadState: "施術直後だけで翌日には疲れが戻る",
     effortHigh: "毎回予約を取ってサロンに通って",
     tag: "睡眠",
+    scene: "混雑する新幹線の座席",
+    reaction: "寝る前の準備の良さに二度見する",
     rakutenName: "USB アイマスク 3Dヘッド立体蒸気ホット",
     rakutenUrl: "https://item.rakuten.co.jp/compia/v1564/",
   },
@@ -116,6 +130,8 @@ const GENRES = [
     altBadState: "頼ってもお金がかさんで栄養も偏る",
     effortHigh: "毎回総菜を買いに出かけて",
     tag: "時短家電",
+    scene: "友達の家のキッチン",
+    reaction: "勝手に出来上がる料理についつい二度見する",
     rakutenName: "アイリスオーヤマ CHEF DRUM シェフドラム",
     rakutenUrl: "https://item.rakuten.co.jp/irisplaza-r/290390/",
   },
@@ -131,6 +147,8 @@ const GENRES = [
     altBadState: "買っても壊れてまたすぐ買い直す",
     effortHigh: "毎回コンビニで傘を買い直して",
     tag: "ファッション小物",
+    scene: "駅の改札前の土砂降りの日",
+    reaction: "一瞬で開く傘に思わず二度見しちゃう",
     rakutenName: "Prv 自動開閉 折りたたみ傘 220g",
     rakutenUrl: "https://item.rakuten.co.jp/prvec/10000024/",
   },
@@ -146,6 +164,8 @@ const GENRES = [
     altBadState: "買い替えても結局また爪とぎされる",
     effortHigh: "何度も家具を買い替えて",
     tag: "ペット用品",
+    scene: "友達の家の広いリビング",
+    reaction: "家具が無傷なことに感心しちゃう",
     rakutenName: "PET PINA 爪とぎポール キャットタワー",
     rakutenUrl: "https://item.rakuten.co.jp/nyandemoya/petpina-pole/",
   },
@@ -154,7 +174,21 @@ const GENRES = [
 const PATTERNS = [
   {
     key: "A",
-    title: "パターンA｜価格ギャップ重視型",
+    title: "パターンA｜シーン共感型",
+    scoreRange: { hook: [18, 20], concrete: [16, 19], contrarian: [8, 12], empathy: [17, 19], clip: [18, 20] },
+    reasons: ["具体的なシーンが目に浮かび保存されやすいため", "第三者のリアクションが好奇心を刺激するため"],
+    build(g) {
+      const l1 = `${g.scene}で${g.product}を使ってる人がいたら、${g.reaction}。`;
+      const rest =
+        `だって、${g.price}なのに${g.dailyEffort}で${g.period}後には${g.resultGood}んだから🕊️` +
+        `${g.scene}でまた見かけたら、絶対二度見する自信ある。` +
+        `周りの反応まで変わるなら、試さない理由がなくない？🕊️`;
+      return `${l1}\n${rest}`;
+    },
+  },
+  {
+    key: "B",
+    title: "パターンB｜価格ギャップ重視型",
     scoreRange: { hook: [17, 19], concrete: [18, 20], contrarian: [15, 18], empathy: [15, 18], clip: [15, 18] },
     reasons: ["価格差のインパクトでクリップを誘発するため", "コスパ訴求が当事者に刺さりやすいため"],
     build(g) {
@@ -163,20 +197,6 @@ const PATTERNS = [
         `だって、${g.price}なのに${g.dailyEffort}で${g.period}後には${g.resultGood}って` +
         `正直コスパ良すぎ🕊️${g.altHigh}使ってるのに${g.altBadState}人こそ試して。` +
         `高いお金払って変化ないより、${g.price}でちゃんと結果出る方が良くない？🕊️`;
-      return `${l1}\n${rest}`;
-    },
-  },
-  {
-    key: "B",
-    title: "パターンB｜時短・手軽さ重視型",
-    scoreRange: { hook: [15, 18], concrete: [16, 19], contrarian: [13, 16], empathy: [17, 19], clip: [15, 18] },
-    reasons: ["時短の実感が刺さり保存されやすいため", "手軽さ訴求で忙しい層に刺さるため"],
-    build(g) {
-      const l1 = `${g.worry}に時間かけたくない人、${g.product}が神すぎた。`;
-      const rest =
-        `だって、${g.dailyEffort}足すだけで${g.period}後には${g.resultGood}って` +
-        `忙しい人ほどマジで助かるやつ🕊️${g.effortHigh}頑張ってるのに効果続かない人こそ試して。` +
-        `手間かけて一時的に変わるより、${g.dailyEffort}で自然にキープできる方が良くない？🕊️`;
       return `${l1}\n${rest}`;
     },
   },
